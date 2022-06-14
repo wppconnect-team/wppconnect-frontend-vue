@@ -96,8 +96,12 @@ import {useStore} from '../stores/dataStore'
                 }                
             },
             getProfilePic(contact){
-                if(contact.profilePicUrl){
-                    return contact.profilePicUrl;
+                if(contact.profilePicThumbObj){
+                    if(contact.profilePicThumbObj.eurl){
+                        return contact.profilePicThumbObj.eurl
+                    }else{
+                        return defaultImage;
+                    }
                 }else{
                     return defaultImage;
                 }
@@ -210,8 +214,8 @@ div .user-data{
   transition-duration: 200ms;
 }
 .user-data img {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
     border-radius: 50%;
     margin-right: 10px;

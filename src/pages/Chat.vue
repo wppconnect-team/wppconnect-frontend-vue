@@ -140,6 +140,9 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 segundos: '',
                 minutos: '',
 
+                loadingMoreMessages: false,
+                hasNoMore: false,
+
             }
         },
         methods: {
@@ -153,24 +156,29 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                             this.$swal.showLoading()
                         }})
                     await api.get(`${getSession()}/check-connection-session`, configHeader());
-                    await this.getAllChats();
-                    await this.getAllContacts();
+                    await this.getAllContacts()
+                    .then(async ()=>{
+                        await this.getAllChats();
+                    })
                     this.$swal().close()
                 } catch (e) {
                     console.log(e)
-                    this.$swal(e)
+                    this.$swal(e.response.data.message)
                     // history.push("/");
                 }
             },
             async getAllContacts() {
-                const {data} = await api.get(`${getSession()}/all-contacts`, configHeader());
-                const arr = [];
+                return new Promise(async (resolve, reject) => {
+                    const {data} = await api.get(`${getSession()}/all-contacts`, configHeader());
+                    const arr = [];
 
-                for (const contact of data.response) {
-                    if (contact.isMyContact && contact.id.user !== undefined)
-                        arr.push(contact);
-                }
-                this.data.contacts = arr;
+                    for (const contact of data.response) {
+                        if (contact.isMyContact && contact.id.user !== undefined)
+                            arr.push(contact);
+                    }
+                    this.data.contacts = arr;
+                    resolve();
+                });
             },
             async getAllChats() {
                 try {
@@ -179,7 +187,14 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     const arr = [];
                     for (const elem of response) {
                         if (!elem.archive) {
-                            arr.push(elem);
+                            var newarray = []
+                            this.data.contacts.map((contact)=>{
+                                if(contact.id._serialized == elem.id){
+                                    newarray = contact;
+                                    newarray.msgs = elem.msgs;
+                                    arr.push(newarray);
+                                }
+                            })
                         }
                     }
                     this.data.chats = arr;
@@ -190,7 +205,14 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     const arr = [];
                     for (const elem of response) {
                         if (!elem.archive) {
-                            arr.push(elem);
+                            var newarray = []
+                            this.data.contacts.map((contact)=>{
+                                if(contact.id._serialized == elem.id){
+                                    newarray = contact;
+                                    newarray.msgs = elem.msgs;
+                                    arr.push(newarray);
+                                }
+                            })
                         }
                     }
 
@@ -243,23 +265,48 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     showConfirmButton: false,
                 })
                 try {
-                    if (contact.id.includes("@g.us")) {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
-                        await api.post(`${getSession()}/send-seen`,{phone: contact.id.replace("@g.us", "")}, configHeader());
+                    if (contact.id._serialized.includes("@g.us")) {
+                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id._serialized.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
+                        await api.post(`${getSession()}/send-seen`,{phone: contact.id._serialized.replace("@g.us", "")}, configHeader());
                         this.messages = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
                     } else {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id.replace(/[@c.us,@c.us]/g, "")}?isGroup=false`, configHeader());
-                        await api.post(`${getSession()}/send-seen`,{phone: contact.id.replace("@c.us", "")}, configHeader());
+                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id._serialized.replace(/[@c.us,@c.us]/g, "")}?isGroup=false`, configHeader());
+                        await api.post(`${getSession()}/send-seen`,{phone: contact.id._serialized.replace("@c.us", "")}, configHeader());
                         this.messages = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
                     }
                 } catch (e) {
                     if(e){
+                        console.log(e)
                         this.$swal(e)
                     }
+                }
+            },
+            async loadMore() {
+                this.loadingMoreMessages = true;
+                try {
+                    let id = this.messages[0].id
+                    let param = "?isGroup=false";
+                    if (this.choosedContact.id._serialized.includes("@g.us")) {
+                        param = "?isGroup=true";
+                    }
+                    const { data } = await api.get(
+                        `${getSession()}/load-earlier-messages/${this.choosedContact.id._serialized}/${id}/before/10${param}`,
+                        configHeader());
+                    if (data && data.response && Array.isArray(data.response)) {
+                        this.messages = [...data.response, ...this.messages]
+                    }
+                    if (data && !data.response) {
+                        this.hasNoMore = true;
+                    }
+                } catch (e) {
+                    this.$swal(e.message)
+                    console.log(e);
+                } finally {
+                    this.loadingMoreMessages = false;
                 }
             },
             setSelectedMessage(message){
@@ -274,8 +321,12 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 }                
             },
             getProfilePic(contact){
-                if(contact.profilePicUrl){
-                    return contact.profilePicUrl;
+                if(contact.profilePicThumbObj){
+                    if(contact.profilePicThumbObj.eurl){
+                        return contact.profilePicThumbObj.eurl
+                    }else{
+                        return defaultImage;
+                    }
                 }else{
                     return defaultImage;
                 }
@@ -727,12 +778,12 @@ margin-bottom: 10px;
     font-size: 16px;
     text-align: center;
 }
-button .load-more{
+.load-more{
     color: #999;
     margin: 0 auto;
     border: 0;
     padding: 10px;
-    background: rgba(236, 236, 236, 0.34);
+    background: rgba(94, 3, 89, 0.808);
     width: 100%;
     font-weight: 600;
     border-radius: 10px;
