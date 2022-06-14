@@ -16,7 +16,6 @@
                             <div class="container-info-ctt">
                                 <img :src="getProfilePic(choosedContact)" :alt="getContactName(choosedContact)"/>
                                 <h3 v-html="getContactName(choosedContact)"></h3>
-                                <div><h6 v-html="getPhoneNumber(choosedContact)"></h6></div>
                             </div>
                         </header>
 
@@ -280,26 +279,27 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 },300)
             },
             async onClickContact(contact){
-                console.log(contact)
                 this.choosedContact = contact;
                 this.$swal({
                     title: 'Please, wait...',
                     timerProgressBar: true,
                     showConfirmButton: false,
                 })
+                let idContact = contact.id._serialized ? contact.id._serialized : contact.id;
                 try {
-                    if (contact.id.includes("@g.us")) {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
-                        if(this.userConfig.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: contact.id.replace("@g.us", "")}, configHeader());}
+                    if (idContact.includes("@g.us")) {
+                        const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
+                        if(this.userConfig.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@g.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
                     } else {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id._serialized.replace(/[@c.us,@c.us]/g, "")}?isGroup=false`, configHeader());
-                        if(this.userConfig.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: contact.id._serialized.replace("@c.us", "")}, configHeader());}
+                        const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@c.us,@c.us]/g, "")}?isGroup=false`, configHeader());
+                        if(this.userConfig.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
+
                         this.$swal().close()
                         this.scrollToBottom()
                     }
@@ -314,12 +314,13 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 this.loadingMoreMessages = true;
                 try {
                     let id = this.messages[0].id
+                    let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
                     let param = "?isGroup=false";
-                    if (this.choosedContact.id._serialized.includes("@g.us")) {
+                    if (idContact.includes("@g.us")) {
                         param = "?isGroup=true";
                     }
                     const { data } = await api.get(
-                        `${getSession()}/load-earlier-messages/${this.choosedContact.id._serialized}/${id}/before/10${param}`,
+                        `${getSession()}/load-earlier-messages/${idContact}/${id}/before/10${param}`,
                         configHeader());
                     if (data && data.response && Array.isArray(data.response)) {
                         this.messages = [...data.response, ...this.messages]

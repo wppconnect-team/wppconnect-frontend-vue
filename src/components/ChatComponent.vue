@@ -14,10 +14,7 @@
         </div>
 
           <span class="msg-title-top" v-if="!message.fromMe">
-            <small>
-              {{message.sender?.name || message.sender?.id?.user}}}
-              {{message?.sender?.pushname}}
-            </small>
+            <small> {{message.sender?.name || message.sender?.id?.user}}</small> <small class="pushname">~ {{message?.sender?.pushname}}</small>
           </span>
         <div class="message-content" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}">
             <div class="image-container" v-if="message.type === 'video'">
@@ -167,6 +164,9 @@ import {useStore} from '../stores/dataStore'
     width: fit-content;
     color: #f0f0f0;
     font-weight: bold;
+}
+.msg-title-top .pushname{
+    color: #f0f0f07e;
 }
 .message-container{
   width: fit-content;

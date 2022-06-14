@@ -182,12 +182,12 @@ aside ul .active {
   background: #2a2f32;
   border-bottom: 1px solid rgb(216, 199, 216);
   z-index: 1;
+  height: 52px;
 }
-.search-component svg {
-width: 15px;
-height: 15px;
+.search-component .material-icons {
+    color:white
 }
-.search-component svg:nth-child(2) {
+.search-component .material-icons:nth-child(2) {
     margin-left: 10px;
 }
 
@@ -228,22 +228,22 @@ div .user-data{
     flex-direction: column;
     width: 100%;
   }
-.user-data .contact-name {
+.user-data .principal-info .contact-name {
     font-weight: 500;
     font-size: 1rem;
     color: purple;
   }
-.user-data .contact-message {
+.user-data .principal-info .contact-message {
     display: flex;
     position: relative;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 250px;
+    max-width: 280px;
     color: black;
     font-weight: 400;
   }
-.user-data .contact-message .left {
+.user-data .principal-info  .contact-message .left {
     font-size: 1rem;
     position: relative;
     flex-grow: 1;
@@ -258,8 +258,7 @@ div .user-data{
     margin-left: 10px;
     width: 15px;
     height: 15px;
-    background: #0a7e23;
-    box-shadow: 1px 1px 5px 1px black;
+    background: #61045c;
     color: #fff;
     display: flex;
     justify-content: center;
@@ -267,8 +266,8 @@ div .user-data{
     border-radius: 10px;
 }
 .user-data .contact-message .unread-message p {
-        font-weight: 600;
-      }
+    font-weight: 600;
+}
 </style>
       
       
