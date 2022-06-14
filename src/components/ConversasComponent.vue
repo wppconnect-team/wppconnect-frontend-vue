@@ -67,19 +67,22 @@ import {useStore} from '../stores/dataStore'
                 }else if(msgs.length > 0){
                     if(msgs[msgs.length - 1].type === "image" || msgs[msgs.length - 1].type === "video" || 
                     msgs[msgs.length - 1].type === "file" || msgs[msgs.length - 1].type === "ptt" || msgs[msgs.length - 1].type === "sticker"){
-                        return 'Mensagem de mídia'
+                        return 'Media message'
                     }
                     else if(msgs[msgs.length - 1].type === "vcard"){
-                        return 'Contato'
+                        return 'Contact'
+                    }
+                    else if(msgs[msgs.length - 1].type === 'document'){
+                        return 'Document'
                     }
                     else if(msgs[msgs.length - 1].type === "revoked"){
-                        return 'Mensagem excluída'
+                        return 'Revoked message'
                     }
                     else if(msgs[msgs.length - 1].type==="gp2"){
-                        return 'Não há mensagens'
+                        return 'No messages'
                     }
                     else if(msgs[msgs.length - 1].type === "notification_template"){
-                        return 'Não há mensagens'
+                        return 'No messages'
                     }
                     else{
                         return msgs[msgs.length - 1].body

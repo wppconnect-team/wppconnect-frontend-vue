@@ -7,9 +7,17 @@ const Groups = () => import('../pages/Groups')
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
     name: 'login',
     component: Login
+  },
+  {
+    path: '/',
+    name: 'index',
+    component: Chat,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/chat',
@@ -49,7 +57,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (localStorage.getItem(config.TOKEN_KEY) == null) {
       next({
-        path: '/',
+        path: '/login',
         params: { nextUrl: to.fullPath }
       })
     }else{

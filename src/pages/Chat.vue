@@ -16,6 +16,7 @@
                             <div class="container-info-ctt">
                                 <img :src="getProfilePic(choosedContact)" :alt="getContactName(choosedContact)"/>
                                 <h3 v-html="getContactName(choosedContact)"></h3>
+                                <div><h6 v-html="getPhoneNumber(choosedContact)"></h6></div>
                             </div>
                         </header>
 
@@ -143,6 +144,10 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 loadingMoreMessages: false,
                 hasNoMore: false,
 
+                userConfig: [{
+                    sendSeen: false, // trocar posteriormente, apenas no momento do teste, vou deixar como false
+                }]
+
             }
         },
         methods: {
@@ -163,8 +168,14 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     this.$swal().close()
                 } catch (e) {
                     console.log(e)
-                    this.$swal(e.response.data.message)
-                    // history.push("/");
+                    if(e.response){
+                        if(e.response.data) {
+                            this.$swal(e.response.data.message)
+                        }else{
+                            this.$swal(e.message)
+                        }
+                    }
+                    router.push('/login')
                 }
             },
             async getAllContacts() {
@@ -188,13 +199,19 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     for (const elem of response) {
                         if (!elem.archive) {
                             var newarray = []
-                            this.data.contacts.map((contact)=>{
-                                if(contact.id._serialized == elem.id){
-                                    newarray = contact;
-                                    newarray.msgs = elem.msgs;
-                                    arr.push(newarray);
-                                }
-                            })
+                            if(elem.id.includes('@g.us')){
+                                newarray = elem;
+                                arr.push(newarray);
+                            }else{
+                                this.data.contacts.map((contact)=>{
+                                    if(contact.id._serialized == elem.id){
+                                        newarray = contact;
+                                        newarray.msgs = elem.msgs;
+                                        newarray.unreadCount = elem.unreadCount;
+                                        arr.push(newarray);
+                                    }
+                                })
+                            }
                         }
                     }
                     this.data.chats = arr;
@@ -206,16 +223,21 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     for (const elem of response) {
                         if (!elem.archive) {
                             var newarray = []
-                            this.data.contacts.map((contact)=>{
-                                if(contact.id._serialized == elem.id){
-                                    newarray = contact;
-                                    newarray.msgs = elem.msgs;
-                                    arr.push(newarray);
-                                }
-                            })
+                            if(elem.id.includes('@g.us')){
+                                newarray = elem;
+                                arr.push(newarray);
+                            }else{
+                                this.data.contacts.map((contact)=>{
+                                    if(contact.id._serialized == elem.id){
+                                        newarray = contact;
+                                        newarray.msgs = elem.msgs;
+                                        newarray.unreadCount = elem.unreadCount;
+                                        arr.push(newarray);
+                                    }
+                                })
+                            }
                         }
                     }
-
                     this.data.chats = arr;
                     this.data.dados = arr;
                 }
@@ -258,6 +280,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 },300)
             },
             async onClickContact(contact){
+                console.log(contact)
                 this.choosedContact = contact;
                 this.$swal({
                     title: 'Please, wait...',
@@ -265,15 +288,17 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     showConfirmButton: false,
                 })
                 try {
-                    if (contact.id._serialized.includes("@g.us")) {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id._serialized.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
-                        await api.post(`${getSession()}/send-seen`,{phone: contact.id._serialized.replace("@g.us", "")}, configHeader());
+                    if (contact.id.includes("@g.us")) {
+                        const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
+                        if(this.userConfig.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: contact.id.replace("@g.us", "")}, configHeader());}
+                        contact.unreadCount = 0;
                         this.messages = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
                     } else {
                         const {data} = await api.get(`${getSession()}/chat-by-id/${contact.id._serialized.replace(/[@c.us,@c.us]/g, "")}?isGroup=false`, configHeader());
-                        await api.post(`${getSession()}/send-seen`,{phone: contact.id._serialized.replace("@c.us", "")}, configHeader());
+                        if(this.userConfig.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: contact.id._serialized.replace("@c.us", "")}, configHeader());}
+                        contact.unreadCount = 0;
                         this.messages = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
@@ -320,6 +345,30 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     return contact.name
                 }                
             },
+            getPhoneNumber(contact){
+                if(contact.id._serialized){
+                    if(contact.id._serialized.includes('@g.us')){
+                        return '';
+                    }else{
+                        return this.maskPhone(contact.id._serialized.replace('55','@g.us','@c.us',''))
+                    }
+                }else if(contact.id){
+                    if(contact.id.includes('@g.us')){
+                        return '';
+                    }else{
+                        return this.maskPhone(contact.id.replace('55','@g.us','@c.us',''))
+                    }
+                }else{
+                    return '';
+                }
+            },
+            maskPhone( value ) {
+            return value
+                .replace(/\D/g, "")
+                .replace(/(\d{2})(\d)/, "($1) $2")
+                .replace(/(\d{5})(\d{4})(\d)/, "$1-$2");
+            },
+
             getProfilePic(contact){
                 if(contact.profilePicThumbObj){
                     if(contact.profilePicThumbObj.eurl){
@@ -359,7 +408,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
     }
 </script>
 <style scoped>
-div .layout{
+div.layout{
   height: 100vh;
   width: 100%;
 
@@ -369,7 +418,7 @@ div .layout{
   justify-content: center;
   align-items: center;
 }
-div .container{
+div.container{
   height: 100vh;
   width: 100%;
 
@@ -380,7 +429,7 @@ div .container{
   align-items: center;
 }
 
-div .content-container{
+div.content-container{
     width: 100%;
     height: 100%;
     display: flex;
@@ -388,13 +437,13 @@ div .content-container{
     clear: both;
     max-height: 100vh;
 }
-div .content-container .emoji-mart.emoji-mart-light {
+div.content-container .emoji-mart.emoji-mart-light {
     position: absolute;
     width: 100% !important;
     left: 0;
     bottom: 120px;
 }
-div .content-container .emoji-mart {
+div.content-container .emoji-mart {
 position: absolute !important;
 bottom: 60px;
 width: 70vw !important;
@@ -402,40 +451,40 @@ height: 50vh;
 background-color: #f0f0f0;
 }
 
-div .content-container .emoji-mart-bar {
+div.content-container .emoji-mart-bar {
 border: 0;
 }
 
-div .content-container .emoji-mart-anchors {
+div.content-container .emoji-mart-anchors {
 padding: 0;
 border: 0;
 }
 
-div .content-container .emoji-mart-anchor-icon {
+div.content-container .emoji-mart-anchor-icon {
 color: #a3a3a3;
 }
 
-div .content-container .emoji-mart-anchor-selected {
+div.content-container .emoji-mart-anchor-selected {
 color: red !important;
 }
 
-div .content-container .emoji-mart-anchor-bar {
+div.content-container .emoji-mart-anchor-bar {
 background-color: #36aa9f !important;
 }
 
-div .content-container .emoji-mart-anchor-icon {
+div.content-container .emoji-mart-anchor-icon {
 color: #8b8b8b !important;
 }
 
-div .content-container .emoji-mart-search {
+div.content-container .emoji-mart-search {
 margin: 5px 8px 15px 8px;
 }
 
-div .content-container .emoji-mart-search-icon {
+div.content-container .emoji-mart-search-icon {
 display: none;
 }
 
-div .content-container .emoji-mart-search input {
+div.content-container .emoji-mart-search input {
 font-size: 16px;
 display: block;
 width: 100%;
@@ -447,7 +496,7 @@ background-color: #e6e6e6;
 color: #4a4a4a;
 }
 
-div .content-container .emoji-mart-category-label span {
+div.content-container .emoji-mart-category-label span {
 display: block;
 width: 100%;
 font-weight: 500;
@@ -456,50 +505,50 @@ color: #b4b4b4;
 background-color: #f0f0f0;
 }
 
-div .content-container .emoji-mart-scroll {
+div.content-container .emoji-mart-scroll {
 height: 200px;
 }
 
-div .content-container .emoji-mart-bar:last-child {
+div.content-container .emoji-mart-bar:last-child {
 display: none;
 }
 
-div .content-container .emoji-mart {
+div.content-container .emoji-mart {
 position: absolute !important;
 bottom: 60px;
 width: 100vw !important;
 height: 40vh;
 }
 
-div .content-container .emoji-mart-category-list {
+div.content-container .emoji-mart-category-list {
 display: flex;
 flex-wrap: wrap;
 }
-div .top-container{  
+.top-container{  
     display: flex;
   align-items: center;
 
   justify-content: space-between;
   width: 100%;
 }
-div .top-container span {
+.top-container span {
 display: flex;
 align-items: center;
 cursor: pointer;
 transition-duration: 200ms;
 }
-div .top-container span p {
+.top-container span p {
       border-bottom: 1px solid #000;
 }
 
-div .top-container span svg {
+.top-container span svg {
     margin-right: 10px;
 }
 
-div .top-container span svg:hover {
+.top-container span svg:hover {
     transform: scale(1.1);
 }
-form .sessions-container{
+form.sessions-container{
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -511,7 +560,7 @@ form .sessions-container{
   position: relative;
   overflow: auto;
 }
-  form .sessions-container .plus-button {
+  form.sessions-container .plus-button {
     position: absolute;
     bottom: 30px;
     right: 30px;
@@ -529,27 +578,27 @@ form .sessions-container{
     align-items: center;
     justify-content: center;
   }
-form .sessions-container .plus-button svg {
+form.sessions-container .plus-button svg {
       color: #fff;
       width: 30px;
       height: 30px;
     }
-form .sessions-container .plus-button svg:hover {
+form.sessions-container .plus-button svg:hover {
       transform: scale(1.05);
       background: #1065ba;
     }
-  form .sessions-container ul {
+  form.sessions-container ul {
     width: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
     list-style-type: none;
     }
-form .sessions-container ul li {
+form.sessions-container ul li {
     margin-top: 1em;
     width: 100%;
 }
-form .sessions-container ul li label .info-session {
+form.sessions-container ul li label .info-session {
     display: flex;
     flex-direction: column;
     cursor: pointer;
@@ -560,20 +609,20 @@ form .sessions-container ul li label .info-session {
     border: 1px solid #f4f6f9;
     transition-duration: 200ms;
 }
-form .sessions-container ul li label small {
+form.sessions-container ul li label small {
 color: #999;
 }
 
-form .sessions-container ul li label p {
+form.sessions-container ul li label p {
 font-weight: 600;
 }
-form .sessions-container ul li label input[type="radio"] {
+form.sessions-container ul li label input[type="radio"] {
           display: none;
         }
-form .sessions-container ul li label input[type="radio"]:checked + .info-session {
+form.sessions-container ul li label input[type="radio"]:checked + .info-session {
     background: #f4f6f9;
 }
-form .sessions-container ul li label .info-session:hover {
+form.sessions-container ul li label .info-session:hover {
 transform: scale(1.03);
 background: aliceblue;
 }
@@ -600,6 +649,13 @@ background: aliceblue;
 .header-contact .container-info-ctt h3 {
     font-weight: 500;
     color: rgb(255, 255, 255);
+}
+.header-contact .container-info-ctt div h6 {
+    font-weight: 400;
+    font-size: 7pt;
+    color: rgb(145, 145, 145);
+    position: relative;
+    left: 0;
 }
 .chat-container{
     display: flex;
