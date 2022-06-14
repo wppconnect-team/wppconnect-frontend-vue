@@ -3,7 +3,7 @@
 
 **The project is in Beta, in DEVELOPMENT, this is not working yet, and bugs may occur**
 
-<img src="https://img.shields.io/static/v1?label=FrontEnd&message=WPPConnect&color=007AF3&style=for-the-badge&logo=ghost"/>
+<img src="https://img.shields.io/static/v1?label=FRONTEND-VUE&message=WPPConnect&color=purple&style=for-the-badge&logo=ghost"/>
 
 ## Our online channels
 
@@ -19,7 +19,7 @@ WPPConnect FrontEnd has been designed to demonstrate how multi-session works dyn
 
 ## Change port backend
 
-To change host and port, just access [config.js](/config.js).
+To change host and port, just access [config.js](/src/config.js).
 
 And change the value of **IP_SERVER** & **IP_SOCKET_IO**
 
