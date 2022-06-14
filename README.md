@@ -1,7 +1,7 @@
 # WPPConnect FrontEnd VueJS
 ----
 
-**The project is in Beta, in development**
+**The project is in Beta, in DEVELOPMENT, this is not working yet, and bugs may occur**
 
 <img src="https://img.shields.io/static/v1?label=FrontEnd&message=WPPConnect&color=007AF3&style=for-the-badge&logo=ghost"/>
 
