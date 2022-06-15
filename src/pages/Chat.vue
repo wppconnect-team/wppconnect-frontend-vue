@@ -7,6 +7,8 @@
                     <ConversasComponent
                         :chats="data.chats"
                         :choosedContact="choosedContact"
+                        :profilePic="getProfilePic(choosedContact)"
+                        :nameContact="getContactName(choosedContact)"
                         @setChats="setChats"
                         @onClickContact="onClickContact"
                     />
@@ -36,6 +38,8 @@
                                     :session="getSession"
                                     :token="getToken"
                                     :message="message"
+                                    :profilePic="getProfilePic(choosedContact)"
+                                    :nameContact="getContactName(choosedContact)"
                                     @selectMessageId="setSelectedMessage"
                                     />
                                 </li>

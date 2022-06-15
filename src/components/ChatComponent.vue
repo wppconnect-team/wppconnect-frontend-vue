@@ -1,10 +1,11 @@
  <template>
     <div class="chat-layout" v-bind:class="{ 'left': isMe== true}" >
-      <ImageModal
-        open={openModalImage}
-        handleClose={handleCloseModalImage}
-        message={message}
-        image={clickedUrl}
+      <ImageModal v-if="message.type == 'image' && showModalImage == true" 
+        @handleClose="showModalImage = false"
+        :message="message"
+        :image="getImageSrc"
+        :profilePic="profilePic"
+        :nameContact="nameContact"
       />
 
       <div class="message-container" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}" >
@@ -18,23 +19,23 @@
           </span>
         <div class="message-content" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}">
             <div class="image-container" v-if="message.type === 'video'">
-                <video :src="'data:image/png;base64'+ message.body" controls />
-                <div class="download" style="display: display" @click="onClickDownload('video')" />
+                <video ref="imageRef" :src="getImageSrc" :poster="getImageSrc" controls />
+                <div class="download" ref="downloadRef" v-bind:style="{display: display}" @click="onClickDownload('video')" />
             </div>
             <div class="image-container" v-if="message.mimetype === 'image/jpeg'">
-                <img :src="getImageSrc" :alt="message.caption" @click="handleOpenModalImage" />
-                <div class="download" style="display: display" @click="onClickDownload('image')"/>
+                <img ref="imageRef" :src="getImageSrc" @click="showModalImage = true" :alt="message.caption" />
+                <div class="download" ref="downloadRef" v-bind:style="{display: display}" @click="onClickDownload('image')"></div>
             </div>
             <div class="document-component" v-if="message.type === 'document'" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}" @click="onClickDownload('document', {mimetype: message.mimetype, filename: message.filename, mediadata: message.mediadata,})">
               <p>{{message.filename}}</p>
+              <span class="material-icons">download</span>
             </div>
             <AudioComponent v-if="message.type === 'ptt'"
               :url="audioUrl"
               :isMe="message.fromMe"
-              :profileImage="!message?.sender?.profilePicThumbObj?.eurl
-                  ? defaultImage
-                  : message?.sender?.profilePicThumbObj?.eurl"
-              @downloadAudio="onClickDownload"
+              :profileImage="profilePic"
+              :message="message"
+              @onClickDownload="onClickDownload"
             />
             <img v-if="message.type === 'sticker'" :src="message.body" />
 
@@ -51,18 +52,25 @@
 <script>
 import { config } from '../config';
 import api, {socket} from '../services/api.js'
-import {login} from '../services/auth'
+import {getSession, getToken} from '../services/auth'
 import router from '../router/index'
 import axios from 'axios'
+import {useStore} from '../stores/dataStore'
+import configHeader from '../util/sessionHeader';
+import ImageModal from './ImageModal.vue'
+import AudioComponent from './AudioComponent.vue'
 
 
 //Assets
-import {useStore} from '../stores/dataStore'
+import Loading from '../assets/loading.gif'
 
     export default {
-        props: ['isMe', 'isWarning', 'session', 'token','message'],
+        components:{
+            ImageModal,
+            AudioComponent,
+        },
+        props: ['isMe', 'isWarning', 'session', 'token','message','profilePic','nameContact'],
         async mounted(){
-            
         },
         setup(){
             const data = useStore()
@@ -71,10 +79,34 @@ import {useStore} from '../stores/dataStore'
         },
         data() {
             return {
-
+                showModalImage: false,
+                display: 'block',
+                audioUrl: null,
             }
         },
         methods: {
+            async onClickDownload (type, option) {
+                if(type != 'document' && type != 'audio') this.$refs.downloadRef.style.backgroundImage = `url('${Loading}')`
+                const response = await api.get(`${getSession()}/get-media-by-message/${this.message.id}`,configHeader());
+
+                if (type === "image") {
+                    this.$refs.imageRef.src = `data:${response.data.mimetype};base64, ${response.data.base64}`;
+                    this.message.body = response.data.base64;
+                    this.message.mimetype = response.data.mimetype;
+                    this.display = 'none';
+                } else if (type === "video") {
+                    this.$refs.imageRef.src = `data:video/webm;base64, ${response.data.base64}`;
+                    this.display = 'none';
+                } else if (type === "audio") {
+                    console.log(response.data)
+                    this.audioUrl = `data:audio/ogg;base64, ${response.data.base64}`;
+                } else if (type === "document") {
+                    const a = document.createElement("a");
+                    a.href = `data:${option.mimetype};base64, ${response.data.base64}`;
+                    a.download = `${option.filename}`;
+                    a.click();
+                }
+            },
             getSender(m) {
                 let sender = m?.sender?.id?.user;
                 if (m.sender) {
@@ -96,7 +128,7 @@ import {useStore} from '../stores/dataStore'
             getReason(m) {
                 try {
                 const sender = this.getSender(m);
-                if (m.type === "revoked") return `${sender} apagou mensagem`;
+                if (m.type === "revoked") return `${sender} has deleted message`;
                 if (m.type === "gp2") {
                     let users = [];
                     if (m.recipients && Array.isArray(m.recipients)) {
@@ -105,9 +137,9 @@ import {useStore} from '../stores/dataStore'
                         ""
                     );
                     }
-                    if (m.subtype === "leave") return `${m?.recipients[0]?.user} saiu`;
-                    if (m.subtype === "remove") return `${sender} removeu \n${users}`;
-                    if (m.subtype === "add") return `${sender} adicionou \n${users}`;
+                    if (m.subtype === "leave") return `${m?.recipients[0]?.user} leave`;
+                    if (m.subtype === "remove") return `${sender} removed \n${users}`;
+                    if (m.subtype === "add") return `${sender} added \n${users}`;
                 }
                 } catch (error) {
                 return "";
@@ -141,7 +173,12 @@ import {useStore} from '../stores/dataStore'
                     if (!this.message?.body) return this.getReason(this.message);
             },
             getImageSrc(){
-                return `data:${this.message.mimetype};base64,${this.message.body}`
+                if(this.message.type == 'video'){
+                    return `data:image/jpeg;base64,${this.message.body}`
+                }else{
+                    return `data:${this.message.mimetype};base64,${this.message.body}`
+                }
+                
             }
 
             
@@ -225,7 +262,7 @@ import {useStore} from '../stores/dataStore'
 
 .message-container .message-content .download {
     position: absolute;
-    background-image: url("");
+    background-image: url("../assets/ic_download_chat.svg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -236,11 +273,9 @@ import {useStore} from '../stores/dataStore'
     bottom: 0;
     left: 0;
     right: 0;
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    height: 100%;
 }
-
-
 /*image container */
 .message-content .image-container{
     min-width: 300px;
@@ -282,10 +317,9 @@ import {useStore} from '../stores/dataStore'
     max-width: 500px;
 }
 
-.message-content .document-component svg {
-    color: #909090;
+.message-content .document-component .material-icons {
+    color: #2b2b2b;
     border-radius: 50%;
-    border: 1px solid black;
     padding: 5px;
     width: 30px;
     height: 30px;
