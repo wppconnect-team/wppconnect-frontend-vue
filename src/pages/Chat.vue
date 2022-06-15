@@ -5,7 +5,7 @@
 
             <div class="content-container">
                     <ConversasComponent
-                        :chats="data.chats"
+                        :chats="getMyChats"
                         :choosedContact="choosedContact"
                         :profilePic="getProfilePic(choosedContact)"
                         :nameContact="getContactName(choosedContact)"
@@ -127,7 +127,13 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             const onLoad = async () => {
                 await this.checkConnection();
             }
+            const addMessage = async (message) => {
+                await this.addMessage(message)
+            }
             onLoad()
+            socket.on("received-message", (message) => {
+                addMessage(message.response)
+            });
         },
         setup(){
             const data = useStore()
@@ -155,6 +161,15 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             }
         },
         methods: {
+            async addMessage(message){
+                this.data.chats.map((chat)=>{
+                    let idContact = chat.id._serialized ? chat.id._serialized : chat.id;
+                    if(idContact == message.chatId){
+                        chat.msgs.push(message)
+                        chat.timestamp = message.timestamp;
+                    }
+                })
+            },
             async checkConnection() {
                 try {
                     this.$swal({
@@ -320,13 +335,11 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 try {
                     let id = this.messages[0].id
                     let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
-                    let param = "?isGroup=false";
+                    let param = `?isGroup=false&id=${id}`;
                     if (idContact.includes("@g.us")) {
-                        param = "?isGroup=true";
+                        param = `?isGroup=true&id=${id}`;
                     }
-                    const { data } = await api.get(
-                        `${getSession()}/load-earlier-messages/${idContact}/${id}/before/10${param}`,
-                        configHeader());
+                    const { data } = await api.get(`${getSession()}/get-messages/${idContact}${param}`, configHeader());
                     if (data && data.response && Array.isArray(data.response)) {
                         this.messages = [...data.response, ...this.messages]
                     }
@@ -408,6 +421,10 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             //Funções que serão chamadas apenas por retorno
             ImageLoader(){
                 return ImageLoader;
+            },
+            getMyChats(){
+                const chatsSort = this.data.chats.sort(function(x, y){return y.msgs[y.msgs.length-1].t - x.msgs[x.msgs.length-1].t;})
+                return chatsSort.filter(chat => chat.msgs.length > 0)
             },
         },
  
