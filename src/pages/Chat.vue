@@ -169,6 +169,11 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         chat.timestamp = message.timestamp;
                     }
                 })
+                let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
+                if(idContact == message.chatId){
+                    this.messages.push(message)
+                    this.scrollToBottom();
+                }
             },
             async checkConnection() {
                 try {
@@ -263,14 +268,16 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 this.chats = chats;
             },
             async sendMessage(){
-                if (!!this.data.message.trim() && !!this.getSession()) {
+                var nMessage = this.data.message;
+                this.data.message = ''
+                if (!!nMessage.trim() && !!this.getSession()) {
                     const by = "";
                     let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
                     let endpoint = "send-message";
 
                     const body = {
                         phone: idContact.replace(/[@c.us,@g.us]/g, ""),
-                        message: by + this.data.message,
+                        message: by + nMessage,
                     };
 
                     if (idContact.includes("@g.us")) {
@@ -283,9 +290,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     }
 
                     await api.post(`${this.getSession()}/${endpoint}`, body, configHeader());
-                    await this.onClickContact(this.choosedContact)
-                    this.scrollToBottom();
-                    this.data.message = ''
+                    //await this.onClickContact(this.choosedContact)
                     this.selectedMessage = []
                 } else {
                     this.$swal('Digite uma mensagem!')
