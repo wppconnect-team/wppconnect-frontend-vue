@@ -202,20 +202,19 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     const arr = [];
                     for (const elem of response) {
                         if (!elem.archive) {
-                            var newarray = []
+                            var newarray = elem
                             if(elem.id.includes('@g.us')){
                                 newarray = elem;
-                                arr.push(newarray);
                             }else{
                                 this.data.contacts.map((contact)=>{
                                     if(contact.id._serialized == elem.id){
                                         newarray = contact;
                                         newarray.msgs = elem.msgs;
                                         newarray.unreadCount = elem.unreadCount;
-                                        arr.push(newarray);
                                     }
                                 })
                             }
+                            arr.push(newarray);
                         }
                     }
                     this.data.chats = arr;
@@ -226,20 +225,19 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     const arr = [];
                     for (const elem of response) {
                         if (!elem.archive) {
-                            var newarray = []
+                            var newarray = elem
                             if(elem.id.includes('@g.us')){
                                 newarray = elem;
-                                arr.push(newarray);
                             }else{
                                 this.data.contacts.map((contact)=>{
                                     if(contact.id._serialized == elem.id){
                                         newarray = contact;
                                         newarray.msgs = elem.msgs;
                                         newarray.unreadCount = elem.unreadCount;
-                                        arr.push(newarray);
                                     }
                                 })
                             }
+                            arr.push(newarray);
                         }
                     }
                     this.data.chats = arr;
@@ -252,14 +250,15 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             async sendMessage(){
                 if (!!this.data.message.trim() && !!this.getSession()) {
                     const by = "";
+                    let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
                     let endpoint = "send-message";
 
                     const body = {
-                        phone: this.choosedContact.id.replace(/[@c.us,@g.us]/g, ""),
+                        phone: idContact.replace(/[@c.us,@g.us]/g, ""),
                         message: by + this.data.message,
                     };
 
-                    if (this.choosedContact.id.includes("@g.us")) {
+                    if (idContact.includes("@g.us")) {
                         body.isGroup = true;
                     }
 
@@ -269,6 +268,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     }
 
                     await api.post(`${this.getSession()}/${endpoint}`, body, configHeader());
+                    await this.onClickContact(this.choosedContact)
                     this.scrollToBottom();
                     this.data.message = ''
                     this.selectedMessage = []
