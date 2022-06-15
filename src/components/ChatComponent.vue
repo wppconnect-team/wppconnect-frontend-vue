@@ -36,6 +36,7 @@
               :profileImage="profilePic"
               :message="message"
               @onClickDownload="onClickDownload"
+              @setUrl="setUrl"
             />
             <img v-if="message.type === 'sticker'" :src="message.body" />
 
@@ -107,6 +108,9 @@ import Loading from '../assets/loading.gif'
                     a.click();
                 }
             },
+            setUrl(base64){
+                this.audioUrl = `data:audio/ogg;base64, ${base64}`;
+            },
             getSender(m) {
                 let sender = m?.sender?.id?.user;
                 if (m.sender) {
@@ -128,7 +132,8 @@ import Loading from '../assets/loading.gif'
             getReason(m) {
                 try {
                 const sender = this.getSender(m);
-                if (m.type === "revoked") return `${sender} has deleted message`;
+                if (m.type === "call_log") return `You missed a call`;
+                if (m.type === "revoked") return `${sender} has deleted a message`;
                 if (m.type === "gp2") {
                     let users = [];
                     if (m.recipients && Array.isArray(m.recipients)) {
@@ -170,6 +175,7 @@ import Loading from '../assets/loading.gif'
                         const sender = this.getSender(this.message);
                         return `${sender} Alterou a imagem do grupo`;
                     }
+                    
                     if (!this.message?.body) return this.getReason(this.message);
             },
             getImageSrc(){
@@ -224,8 +230,7 @@ import Loading from '../assets/loading.gif'
 }
 .message-container.warning{
     background: #6A30FF;
-    width: 100%;
-    color: purple;
+    color: rgb(216, 216, 216);
     text-align: center;
 }
 .message-container.warning .msg-title-top,

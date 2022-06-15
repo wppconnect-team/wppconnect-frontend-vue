@@ -45,7 +45,7 @@ import {useStore} from '../stores/dataStore'
             const onLoad = () => {
                 this.setAudio();
             }
-            await onLoad();
+            onLoad();
         },
         setup(){
             const data = useStore()
@@ -62,16 +62,13 @@ import {useStore} from '../stores/dataStore'
                 this.audio = new Audio(this.$refs.audioPlayer.dataset.url);
             },
             async checkIsDownloaded() {
-                if (!this.$refs.audioPlayer.dataset.url) {
-                    //this.$emit('onClickDownload','audio')
+                if (this.$refs.audioPlayer.dataset.url === undefined) {
                     await api.get(`${getSession()}/get-media-by-message/${this.message.id}`,configHeader())
                     .then((result)=>{
-                        this.$refs.audioPlayer.dataset.url = `data:audio/ogg;base64,${result.data.base64}`;
-                        this.audio.dataset.url = `data:audio/ogg;base64,${result.data.base64}`;
-                        //this.url = `data:audio/ogg;base64, ${result.data.base64}`;
-                        this.start();
+                        this.$emit('setUrl', result.data.base64)
+                        this.audio = new Audio(this.$refs.audioPlayer.dataset.url);
+                        this.start()
                     })
-                    
                 } else {
                     this.start();
                 }
@@ -79,8 +76,8 @@ import {useStore} from '../stores/dataStore'
             start() {
                 this.onClickPlay();
                 this.audio.onloadstart = () => {
-                    this.setMessageDate();
                     this.$refs.audioPlayer.classList.add("loading");
+                    this.setMessageDate();
                 };
 
                 this.audio.onplay = () => this.$refs.audioPlayer.classList.add("playing");
@@ -102,7 +99,10 @@ import {useStore} from '../stores/dataStore'
                 this.audio.paused ? this.audio.play() : this.audio.pause();
             },
             formatTimeToDisplay(seconds) {
-                const milliseconds = seconds * 1000;
+                var milliseconds = seconds * 1000;
+                /*if(!Number.isInteger(seconds) ){
+                    milliseconds = 1 * 1000;
+                }*/
                 return new Date(milliseconds).toISOString().substr(14, 5);
             },
 
@@ -122,7 +122,6 @@ import {useStore} from '../stores/dataStore'
 
             showTimeDuration() {
                 const {duration = 0} = this.audio;
-                console.log(this.audio)
                 const durationDisplay = this.formatTimeToDisplay(duration);
                 this.updateCurrentTimeDisplay(durationDisplay);
             },

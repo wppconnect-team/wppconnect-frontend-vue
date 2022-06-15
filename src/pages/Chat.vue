@@ -19,6 +19,7 @@
                                 <img :src="getProfilePic(choosedContact)" :alt="getContactName(choosedContact)"/>
                                 <h3 v-html="getContactName(choosedContact)"></h3>
                             </div>
+                            <div class="close" @click="choosedContact = ''; messages = ''"><span class="material-icons">close</span></div>
                         </header>
 
                         <ul style="overflow-x: hidden">
@@ -661,6 +662,11 @@ background: aliceblue;
     color: rgb(145, 145, 145);
     position: relative;
     left: 0;
+}
+.header-contact .close{
+    color:white;
+    margin-top:15px;
+    cursor: pointer;
 }
 .chat-container{
     display: flex;
