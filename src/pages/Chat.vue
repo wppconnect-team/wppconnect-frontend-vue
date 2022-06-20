@@ -64,10 +64,13 @@
                             </div>
                         </div>
                         <div class="bottom-container" v-if="(choosedContact.length != 0)">
-                            <textarea placeholder="Digite uma mensagem..." @keydown.enter.prevent="sendMessage" v-model="data.message"/>
+                            <textarea placeholder="Digite uma mensagem..." id="message" @keydown.enter.prevent="sendMessage" v-model="data.message"/>
 
                             <div class="action-buttons">
                                 <div>
+                                    <div v-if="emoji == true">
+                                        <Picker :data="emojiIndex" :showPreview="false" :showSearch="false" set="apple" @select="addEmoji" />
+                                    </div>
                                     <button @click="emoji = false" v-if="emoji">
                                         <span class="material-icons">close</span>
                                     </button>
@@ -108,10 +111,16 @@ import api, {socket} from '../services/api.js'
 import {getSession, getToken} from '../services/auth'
 import router from '../router/index'
 import {useStore} from '../stores/dataStore'
+import data from "emoji-mart-vue-fast/data/all.json";
+import "emoji-mart-vue-fast/css/emoji-mart.css";
+import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
+let emojiIndex = new EmojiIndex(data);
 
 //Components
 import ChatComponent from '../components/ChatComponent.vue'
 import ConversasComponent from '../components/ConversasComponent.vue'
+
+
 
 //Assets
 import ImageLoader from '../assets/ic_loader_chat.svg'
@@ -121,6 +130,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
         components: {
             ChatComponent,
             ConversasComponent,
+            Picker,
         },
         async mounted(){
             const onLoad = async () => {
@@ -145,6 +155,8 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 messages: [],
                 selectedMessage: [],
                 emoji: false,
+                emojiIndex: emojiIndex,
+                emojisOutput: "",
 
                 recordState: false,
                 segundos: '',
@@ -419,7 +431,10 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     return defaultImage;
                 }
             },
-
+            addEmoji(emoji){
+                this.data.message = this.data.message + emoji.native;
+                document.getElementById('message').focus
+            },
 
             //Funções que serão chamadas apenas por retorno
             getSession(){
@@ -472,7 +487,7 @@ div.container{
   align-items: center;
 }
 
-div.content-container{
+.content-container{
     width: 100%;
     height: 100%;
     display: flex;
@@ -480,54 +495,41 @@ div.content-container{
     clear: both;
     max-height: 100vh;
 }
-div.content-container .emoji-mart.emoji-mart-light {
-    position: absolute;
-    width: 100% !important;
-    left: 0;
-    bottom: 120px;
-}
-div.content-container .emoji-mart {
-position: absolute !important;
-bottom: 60px;
-width: 70vw !important;
-height: 50vh;
-background-color: #f0f0f0;
-}
 
-div.content-container .emoji-mart-bar {
+.emoji-mart-bar {
 border: 0;
 }
 
-div.content-container .emoji-mart-anchors {
+.emoji-mart-anchors {
 padding: 0;
 border: 0;
 }
 
-div.content-container .emoji-mart-anchor-icon {
+.emoji-mart-anchor-icon {
 color: #a3a3a3;
 }
 
-div.content-container .emoji-mart-anchor-selected {
+.emoji-mart-anchor-selected {
 color: red !important;
 }
 
-div.content-container .emoji-mart-anchor-bar {
+.emoji-mart-anchor-bar {
 background-color: #36aa9f !important;
 }
 
-div.content-container .emoji-mart-anchor-icon {
+.emoji-mart-anchor-icon {
 color: #8b8b8b !important;
 }
 
-div.content-container .emoji-mart-search {
+.emoji-mart-search {
 margin: 5px 8px 15px 8px;
 }
 
-div.content-container .emoji-mart-search-icon {
+.emoji-mart-search-icon {
 display: none;
 }
 
-div.content-container .emoji-mart-search input {
+.emoji-mart-search input {
 font-size: 16px;
 display: block;
 width: 100%;
@@ -539,7 +541,7 @@ background-color: #e6e6e6;
 color: #4a4a4a;
 }
 
-div.content-container .emoji-mart-category-label span {
+.emoji-mart-category-label span {
 display: block;
 width: 100%;
 font-weight: 500;
@@ -548,22 +550,23 @@ color: #b4b4b4;
 background-color: #f0f0f0;
 }
 
-div.content-container .emoji-mart-scroll {
+.emoji-mart-scroll {
 height: 200px;
 }
 
-div.content-container .emoji-mart-bar:last-child {
+.emoji-mart-bar:last-child {
 display: none;
 }
 
-div.content-container .emoji-mart {
-position: absolute !important;
-bottom: 60px;
-width: 100vw !important;
-height: 40vh;
+.emoji-mart {
+    position: absolute !important;
+    bottom: 140px;
+    width: 100% !important;
+    height: 40vh;
+    z-index:2;
 }
 
-div.content-container .emoji-mart-category-list {
+.emoji-mart-category-list {
 display: flex;
 flex-wrap: wrap;
 }
@@ -742,6 +745,9 @@ font-size: 1rem;
 
 .chat-container .bottom-container .action-buttons div {
 display: flex;
+}
+.chat-container .bottom-container .action-buttons div button .material-icons {
+    cursor: pointer;
 }
 .chat-container .bottom-container label {
     display: flex;
