@@ -71,15 +71,15 @@
                                     <div v-if="emoji == true">
                                         <Picker :data="emojiIndex" :showPreview="false" :showSearch="false" set="apple" @select="addEmoji" />
                                     </div>
-                                    <button @click="emoji = false" v-if="emoji">
+                                    <button @click="tooggleEmojiBox" v-if="emoji">
                                         <span class="material-icons">close</span>
                                     </button>
-                                    <button @click="emoji = true" v-else>
+                                    <button @click="tooggleEmojiBox" v-else>
                                         <span class="material-icons">add_reaction</span>
                                     </button>
 
                                     <label>
-                                    <input type="file" @change="onChangeAnexo" />
+                                    <input type="file" @change="onChangeAttach" />
                                     <div class="attach-info">
                                         <span class="material-icons">attach_file</span>
                                     </div>
@@ -151,7 +151,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
         },
         data() {
             return {
-                choosedContact: [],
+                choosedContact: '',
                 messages: [],
                 selectedMessage: [],
                 emoji: false,
@@ -190,7 +190,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         if(message.fromMe){ chat.unreadCount = 0 }
                     }
                 })
-                if(this.choosedContact.length > 0){
+                if(this.choosedContact){
                     let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
                     if(idContact == message.chatId){
                         this.scrollToBottom();
@@ -385,6 +385,34 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     this.loadingMoreMessages = false;
                 }
             },
+            onChangeAttach(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    const filename = e.target.files[0].name;
+                    reader.readAsDataURL(e.target.files[0]);
+
+                    const that = this;
+                    reader.onload = async function (e) {
+                    let idContact = that.choosedContact.id._serialized ? that.choosedContact.id._serialized : that.choosedContact.id;
+                        const base64 = e.target.result;
+                        var options = {
+                            base64: base64,
+                            phone: idContact.replace(/[@c.us,@g.us]/g, ""),
+                            message: "",
+                            filename: filename,
+                            isGroup: false,
+                        };
+                        if (idContact.includes("@g.us")) {
+                            options.isGroup = true;
+                        }
+                        try {
+                            await api.post(`${getSession()}/send-file-base64`, options, configHeader());
+                        } catch (error) {
+                            console.log("Catch onChangeAttach()", error);
+                        }
+                    };
+                }
+            },
             setSelectedMessage(message){
                 this.selectedMessage = message;
             },
@@ -431,9 +459,13 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     return defaultImage;
                 }
             },
+            tooggleEmojiBox(){
+                this.emoji = !this.emoji;
+                document.getElementById('message').focus()
+            },
             addEmoji(emoji){
                 this.data.message = this.data.message + emoji.native;
-                document.getElementById('message').focus
+                document.getElementById('message').focus()
             },
 
             //Funções que serão chamadas apenas por retorno
@@ -746,7 +778,8 @@ font-size: 1rem;
 .chat-container .bottom-container .action-buttons div {
 display: flex;
 }
-.chat-container .bottom-container .action-buttons div button .material-icons {
+.chat-container .bottom-container .action-buttons div button .material-icons,
+.chat-container .bottom-container .action-buttons div .material-icons {
     cursor: pointer;
 }
 .chat-container .bottom-container label {
