@@ -174,12 +174,16 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         if(!exist){
                             chat.msgs.push(message)
                             chat.timestamp = message.timestamp;
+                            chat.unreadCount = chat.unreadCount+1;
                         }
+                        if(message.fromMe){ chat.unreadCount = 0 }
                     }
                 })
-                let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
-                if(idContact == message.chatId){
-                    this.scrollToBottom();
+                if(this.choosedContact.length > 0){
+                    let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
+                    if(idContact == message.chatId){
+                        this.scrollToBottom();
+                    }
                 }
             },
             async checkConnection() {
@@ -439,7 +443,6 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 return ImageLoader;
             },
             getMyChats(){
-                console.log(this.data.chats)
                 const chatsSort = this.data.chats.sort(function(x, y){return y.msgs[y.msgs.length-1].t - x.msgs[x.msgs.length-1].t;})
                 return chatsSort.filter(chat => chat.msgs.length > 0)
             },
