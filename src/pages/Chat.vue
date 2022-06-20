@@ -105,9 +105,8 @@
 import { config } from '../config';
 import configHeader from "../util/sessionHeader";
 import api, {socket} from '../services/api.js'
-import {login, getSession, getToken} from '../services/auth'
+import {getSession, getToken} from '../services/auth'
 import router from '../router/index'
-import axios from 'axios'
 import {useStore} from '../stores/dataStore'
 
 //Components
@@ -325,6 +324,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     showConfirmButton: false,
                 })
                 let idContact = contact.id._serialized ? contact.id._serialized : contact.id;
+
                 try {
                     if (idContact.includes("@g.us")) {
                         const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
@@ -335,7 +335,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         this.$swal().close()
                         this.scrollToBottom()
                     } else {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@c.us,@c.us]/g, "")}?isGroup=false`, configHeader());
+                        const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@c.us,@g.us]/g, "")}?isGroup=false`, configHeader());
                         if(this.userConfig.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
