@@ -185,7 +185,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             async checkConnection() {
                 try {
                     this.$swal({
-                        title: 'Por favor, aguarde...',
+                        title: 'Please, wait...',
                         timerProgressBar: true,
                         showConfirmButton: false,
                         didOpen: () => {
