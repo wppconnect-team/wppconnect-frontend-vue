@@ -165,13 +165,20 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 this.data.chats.map((chat)=>{
                     let idContact = chat.id._serialized ? chat.id._serialized : chat.id;
                     if(idContact == message.chatId){
-                        chat.msgs.push(message)
-                        chat.timestamp = message.timestamp;
+                        var exist = false;
+                        chat.msgs.map(msg=>{
+                            if(msg.id == message.id){
+                                exist = true;
+                            }
+                        })
+                        if(!exist){
+                            chat.msgs.push(message)
+                            chat.timestamp = message.timestamp;
+                        }
                     }
                 })
                 let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
                 if(idContact == message.chatId){
-                    this.messages.push(message)
                     this.scrollToBottom();
                 }
             },
@@ -191,6 +198,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     })
                     this.$swal().close()
                 } catch (e) {
+                    router.push('/login')
                     console.log(e)
                     if(e.response){
                         if(e.response.data) {
@@ -199,7 +207,6 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                             this.$swal(e.message)
                         }
                     }
-                    router.push('/login')
                 }
             },
             async getAllContacts() {
@@ -229,6 +236,9 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                                 this.data.contacts.map((contact)=>{
                                     if(contact.id._serialized == elem.id){
                                         newarray = contact;
+                                        if(elem.msgs.length === 0){
+                                            newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
+                                        }
                                         newarray.msgs = elem.msgs;
                                         newarray.unreadCount = elem.unreadCount;
                                     }
@@ -317,6 +327,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         if(this.userConfig.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@g.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
+                        this.choosedContact.msgs = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
                     } else {
@@ -324,7 +335,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         if(this.userConfig.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
-
+                        this.choosedContact.msgs = data?.response || [];
                         this.$swal().close()
                         this.scrollToBottom()
                     }
@@ -428,6 +439,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 return ImageLoader;
             },
             getMyChats(){
+                console.log(this.data.chats)
                 const chatsSort = this.data.chats.sort(function(x, y){return y.msgs[y.msgs.length-1].t - x.msgs[x.msgs.length-1].t;})
                 return chatsSort.filter(chat => chat.msgs.length > 0)
             },
