@@ -29,7 +29,8 @@
                             </button>
                             <div class="waiting-container" v-if="(messages.length == 0)">
                                 <img :src="ImageLoader" alt="Smartphone" />
-                                <h2>Choose a contact to start a conversation</h2>
+                                <h2> {{i18n.chooseContact}}</h2>
+                                
                             </div>
                             <div v-if="messages.length > 0">
                                 <li v-bind:key="message.id" v-for="message in messages" :id="message.id">
@@ -117,6 +118,7 @@ import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
 let emojiIndex = new EmojiIndex(data);
 import MicRecorder from "mic-recorder-to-mp3";
+import {language} from '../services/language'
 
 //Components
 import ChatComponent from '../components/ChatComponent.vue'
@@ -180,7 +182,8 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
 
                 userConfig: [{
                     sendSeen: false, // trocar posteriormente, apenas no momento do teste, vou deixar como false
-                }]
+                }],
+                i18n: language(),
 
             }
         },
