@@ -11,26 +11,40 @@ export const language = () => {
 export function getLanguage(lang){
     if(lang == 'pt-BR'){
         return {
-            //ChatPage
             chooseContact: 'Escolha um contato para iniciar uma conversa',
-
-            //ContactPage
             contacts: 'Contatos',
             searchContacts: 'Buscar contatos',
             name: 'Nome',
             phone: 'Telefone',
+            participants: 'Membros',
+            groups: 'Grupos',
+            searchGroup: 'Procurar grupos...',
+            inviteParticipants: 'Convidar membros',
+            inviteParticipantsText: 'Convide membros para seus grupos rapidamente',
+            pleaseWait: 'Por favor, aguarde...',
+            allGroups: 'Grupos',
+            allGroupsText: 'Gerencie todos os seus grupos.',
+            createGroup: 'Criar grupo',
+            createGroupText: 'Crie grupos do whatsapp de uma forma rápida.',
         }
     }
     if(lang == 'en-US'){
         return {
-            //ChatPage
             chooseContact: 'Choose a contact to start a conversation',
-
-            //ContactPage
             contacts: 'Contacts',
             searchContacts: 'Search contacts',
             name: 'Name',
             phone: 'Phone',
+            participants: 'Partcipants',
+            groups: 'Groups',
+            searchGroup: 'Search groups...',
+            inviteParticipants: 'Invite partcipants',
+            inviteParticipantsText: 'Invite participants to your groups quickly.',
+            pleaseWait: 'Please, wait...',
+            allGroups: 'All Groups',
+            allGroupsText: 'Manage all your groups.',
+            createGroup: 'Create Group',
+            createGroupText: 'Create a WhatsApp group in an automated way.',
         }
     }
 }
