@@ -442,6 +442,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             zerarCronometro() {
                 this.segundos = 0;
                 this.minutos = 0;
+                this.tooggleCount();
             },
 
             startRecording() {
@@ -469,7 +470,12 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             },
 
             cancelRecording() {
+                this.recorder.stop().getMp3().then(([buffer, blob]) => {
+                }).catch((e) => {
+                    console.log(e);
+                });
                 this.recordState = null;
+
                 this.stop = true;
                 this.zerarCronometro();
             },

@@ -8,10 +8,9 @@
         :nameContact="nameContact"
       />
 
-      <div class="message-container" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}" >
-        <div style="position: absolute, right: -5, top: -5, z-index: 10">
-            <span class="material-icons">keyboard_arrow_down</span>
-            <!-- aqui entra o menu de responder e apagar -->
+      <div class="message-container" @dblclick="selectMessageId" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}" >
+        <div style="position: absolute, right: -5, top: -5, z-index: 10; ">
+            <span class="material-icons" style="cursor:pointer">keyboard_arrow_down</span>          
         </div>
 
           <span class="msg-title-top" v-if="!message.fromMe">
@@ -86,6 +85,9 @@ import Loading from '../assets/loading.gif'
             }
         },
         methods: {
+            selectMessageId(){
+                this.$emit('selectMessageId',this.message)
+            },
             async onClickDownload (type, option) {
                 if(type != 'document' && type != 'audio') this.$refs.downloadRef.style.backgroundImage = `url('${Loading}')`
                 const response = await api.get(`${getSession()}/get-media-by-message/${this.message.id}`,configHeader());
