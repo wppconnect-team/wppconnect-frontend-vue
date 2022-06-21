@@ -260,6 +260,9 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                             var newarray = elem
                             if(elem.id.includes('@g.us')){
                                 newarray = elem;
+                                if(elem.msgs.length === 0){
+                                    newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
+                                }
                             }else{
                                 this.data.contacts.map((contact)=>{
                                     if(contact.id._serialized == elem.id){
@@ -286,11 +289,17 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                             var newarray = elem
                             if(elem.id.includes('@g.us')){
                                 newarray = elem;
+                                if(elem.msgs.length === 0){
+                                    newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
+                                }
                             }else{
                                 this.data.contacts.map((contact)=>{
                                     if(contact.id._serialized == elem.id){
                                         newarray = contact;
                                         newarray.msgs = elem.msgs;
+                                        if(elem.msgs.length === 0){
+                                            newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
+                                        }
                                         newarray.unreadCount = elem.unreadCount;
                                     }
                                 })
