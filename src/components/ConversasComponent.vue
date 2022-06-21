@@ -1,7 +1,7 @@
  <template>
  <aside>
         <div class="search-component" style="margin-bottom: 0">
-            <input placeholder="Search chats" id="search-chats" @change="onSearch" />
+            <input placeholder="Search chats" id="search-chats"/>
             <span class="material-icons">search</span>
         </div>
         <ul id="all-contacts" >

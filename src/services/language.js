@@ -15,6 +15,10 @@ export function getLanguage(lang){
             chooseContact: 'Escolha um contato para iniciar uma conversa',
 
             //ContactPage
+            contacts: 'Contatos',
+            searchContacts: 'Buscar contatos',
+            name: 'Nome',
+            phone: 'Telefone',
         }
     }
     if(lang == 'en-US'){
@@ -23,6 +27,10 @@ export function getLanguage(lang){
             chooseContact: 'Choose a contact to start a conversation',
 
             //ContactPage
+            contacts: 'Contacts',
+            searchContacts: 'Search contacts',
+            name: 'Name',
+            phone: 'Phone',
         }
     }
 }
