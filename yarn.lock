@@ -3953,6 +3953,13 @@ klona@^2.0.5:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==
 
+lamejs@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/lamejs/-/lamejs-1.2.1.tgz#0f92d38729213f106d4a19ded20821da7e89c8e4"
+  integrity sha512-s7bxvjvYthw6oPLCm5pFxvA84wUROODB8jEO2+CE1adhKgrIvVOlmMgY8zyugxGrvRaDHNJanOiS21/emty6dQ==
+  dependencies:
+    use-strict "1.0.1"
+
 launch-editor-middleware@^2.2.1:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/launch-editor-middleware/-/launch-editor-middleware-2.4.0.tgz#0c3f24608fa69e4ae00d5d1c89f34bf0ba25a8f4"
@@ -4149,6 +4156,13 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==
+
+mic-recorder-to-mp3@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/mic-recorder-to-mp3/-/mic-recorder-to-mp3-2.2.2.tgz#32e767d1196fb81d10e279f31c304350c9501d01"
+  integrity sha512-xDkOaHbojW3bdKOGn9CI5dT+Mc0RrfczsX/Y1zGJp3FUB4zei5ZKFnNm7Nguc9v910wkd7T3csnCTq5EtCF3Zw==
+  dependencies:
+    lamejs "^1.2.0"
 
 micromatch@^4.0.2, micromatch@^4.0.4:
   version "4.0.5"
@@ -5886,6 +5900,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-strict@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/use-strict/-/use-strict-1.0.1.tgz#0bb80d94f49a4a05192b84a8c7d34e95f1a7e3a0"
+  integrity sha512-IeiWvvEXfW5ltKVMkxq6FvNf2LojMKvB2OCeja6+ct24S1XOmQw2dGr2JyndwACWAGJva9B7yPHwAmeA9QCqAQ==
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"

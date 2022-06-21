@@ -85,7 +85,7 @@
                                     </div>
                                     </label>
                                 </div>
-                                    <span class="material-icons" style="cursor:pointer;" @click="startRecording" v-if="!recordState">mic</span>
+                                    <span class="material-icons" style="cursor:pointer;" id="startRecording" @click="startRecording" v-if="!recordState">mic</span>
                                     <div class="contador" v-else>
                                         <div class="main-cont">
                                             <span class="material-icons" style="cursor:pointer;"  v-if="recordState" @click="cancelRecording">cancel</span>
@@ -115,6 +115,7 @@ import data from "emoji-mart-vue-fast/data/all.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
 let emojiIndex = new EmojiIndex(data);
+import MicRecorder from "mic-recorder-to-mp3";
 
 //Components
 import ChatComponent from '../components/ChatComponent.vue'
@@ -143,6 +144,10 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             socket.on("received-message", (message) => {
                 addMessage(message.response)
             });
+
+            $("#startRecording").on('click', () => {
+                console.log('teste')
+            });
         },
         setup(){
             const data = useStore()
@@ -159,8 +164,12 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 emojisOutput: "",
 
                 recordState: false,
-                segundos: '',
-                minutos: '',
+                IsBlocked: null,
+                stop: null,
+                segundos: 0,
+                minutos: 0,
+                recorder: new MicRecorder({bitRate: 128}),
+                intervalId: null,
 
                 loadingMoreMessages: false,
                 hasNoMore: false,
@@ -413,10 +422,100 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     };
                 }
             },
+
+            /** FUNÇÕES PARA GRAVAÇÃO DE AUDIO E CONTAGEM DE TEMPO - INICIO */
+            tooggleCount(){
+                    if (this.stop === false) {
+                        this.intervalId = setInterval(() => {
+                                if (this.segundos >= 59) {
+                                    this.zerar();
+                                    this.incrementarMinuto();
+                                }
+
+                                this.segundos = this.segundos + 1;
+                        }, 1000);
+                    }else{
+                        clearInterval(this.intervalId)
+                        this.intervalId = null
+                    }
+            },
+            zerarCronometro() {
+                this.segundos = 0;
+                this.minutos = 0;
+            },
+
+            startRecording() {
+                navigator.mediaDevices.getUserMedia({audio: true},
+                    () => {
+                        // alert("Permission Granted");
+                        this.IsBlocked = false;
+                    },
+                    () => {
+                        alert("Permission Denied");
+                        this.IsBlocked = true;
+                    },
+                );
+                if (this.isBlocked) {
+                    alert("Permission Denied");
+                } else {
+                    this.recorder.start().then(() => {
+                        this.recordState = true;
+                        this.stop = false;
+                        this.tooggleCount()
+                    }).catch((e) => {
+                        console.error(e);
+                    });
+                }
+            },
+
+            cancelRecording() {
+                this.recordState = null;
+                this.stop = true;
+                this.zerarCronometro();
+            },
+
+            finishRecording() {
+                this.recordState = null
+                this.stop = true;
+                this.zerarCronometro();
+                this.tooggleCount()
+
+                this.recorder.stop().getMp3().then(([buffer, blob]) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    var that = this;
+                    reader.onloadend = async function () {
+                        const base64data = reader.result;
+                        let idContact = that.choosedContact.id._serialized ? that.choosedContact.id._serialized : that.choosedContact.id;
+                        await api.post(`${that.getSession()}/send-voice-base64`, {
+                            base64Ptt: base64data,
+                            phone: idContact,
+                        }, configHeader());
+                    };
+
+                    const file = new File(buffer, "audio.mp3", {
+                        type: blob.type,
+                        lastModified: Date.now()
+                    });
+                    new Audio(URL.createObjectURL(file));
+
+                }).catch((e) => {
+                    alert("We could not retrieve your message");
+                    console.log(e);
+                });
+            },
+
+            incrementarMinuto() {
+                this.minutos = this.minutos+1;
+            },
+
+            zerar() {
+                this.segundos = 0;
+            },
+            /** FUNÇÕES PARA GRAVAÇÃO DE AUDIO E CONTAGEM DE TEMPO - FIM */
             setSelectedMessage(message){
                 this.selectedMessage = message;
             },
-
             getContactName(contact){
                 if(!contact.name){
                     return contact?.id?.replace("@c.us", "").replace("@g.us", "")
