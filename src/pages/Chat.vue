@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="layout">
+            <Sidebar />
             <div class="container">
 
             <div class="content-container">
@@ -120,6 +121,8 @@ import MicRecorder from "mic-recorder-to-mp3";
 //Components
 import ChatComponent from '../components/ChatComponent.vue'
 import ConversasComponent from '../components/ConversasComponent.vue'
+import Sidebar from '../components/Sidebar.vue'
+
 
 
 
@@ -132,6 +135,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             ChatComponent,
             ConversasComponent,
             Picker,
+            Sidebar,
         },
         async mounted(){
             const onLoad = async () => {
@@ -603,7 +607,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
     }
 </script>
 <style scoped>
-div.layout{
+.layout{
   height: 100vh;
   width: 100%;
 
@@ -613,7 +617,7 @@ div.layout{
   justify-content: center;
   align-items: center;
 }
-div.container{
+.container{
   height: 100vh;
   width: 100%;
 
