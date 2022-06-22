@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter,createWebHistory } from 'vue-router'
 import config from '../config.js'
 const Login = () => import('../pages/Login')
 const Chat = () => import('../pages/Chat')
@@ -55,7 +55,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   linkActiveClass: 'active',
   routes
 })
