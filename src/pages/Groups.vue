@@ -66,36 +66,22 @@
                             <input id="search-groups" :placeholder="i18n.searchGroup"/>
                         </div>
                     </header>
-                    <div class="table-container">
-                        <table>
-                            <thead>
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <th>
-                                    #
-                                </th>
-                                <th>
-                                    {{i18n.name}}
-                                </th>
-                                <th>
-                                    ID
-                                </th>
+                            <th scope="col">#</th>
+                            <th scope="col">{{i18n.name}}</th>
+                            <th scope="col">ID</th>
                             </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(group, index) in groups" v-bind:key="index">
-                                    <td>
-                                    # {{index}}
-                                    </td>
-                                    <td>
-                                    {{group.name}}
-                                    </td>
-                                    <td>
-                                    {{group.id}}
-                                    </td>
-                                </tr>
-                            </tbody>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(group, index) in groups" v-bind:key="index">
+                            <th scope="row">{{index}}</th>
+                            <td>{{group.name}}</td>
+                            <td>{{group.id}}</td>
+                            </tr>
+                        </tbody>
                         </table>
-                    </div>
                 </div>
             </div>
         </div>
@@ -290,32 +276,4 @@ header input{
     outline: 0;
 }
 
-table {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  top:70px;
-  left: 100px;
-      font-size: 13pt;
-}
-table thead tr{
-    width: 88%;
-  display: flex;
-  align-content: center;
-  justify-content: space-between;
-  background-color:rgb(202, 202, 202);
-}
-table thead tr th{
-    width: 30%;
-}
-table tbody tr{
-    width: 88%;
-  display: flex;
-  justify-content: space-between;
-  border: 0.5px solid black;
-}
-table tbody tr td{
-    width: 100%;
-}
 </style>
