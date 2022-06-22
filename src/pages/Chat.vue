@@ -638,11 +638,11 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
 
   justify-content: center;
   align-items: center;
+  margin-left:43px;
 }
 .container{
   height: 100vh;
   width: 100%;
-  margin-left:85px;
 
   display: flex;
   flex-direction: column;
@@ -652,7 +652,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
 }
 
 .content-container{
-    width: 100%;
+    width: 130%;
     height: 100%;
     display: flex;
     overflow: hidden;

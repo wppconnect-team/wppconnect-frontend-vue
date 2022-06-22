@@ -122,7 +122,7 @@ aside {
   background: #ebebeb;
 
   height: 100%;
-  width: 35rem;
+  width: 40rem;
   min-width: 20%;
   overflow: hidden auto;
 
@@ -239,14 +239,14 @@ div .user-data{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 280px;
+    max-width: 250px;
     color: black;
     font-weight: 400;
+    margin-top:-10px;
   }
 .user-data .principal-info  .contact-message .left {
     font-size: 1rem;
     position: relative;
-    flex-grow: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
