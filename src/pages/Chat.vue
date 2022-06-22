@@ -111,6 +111,7 @@ import { config } from '../config';
 import configHeader from "../util/sessionHeader";
 import api, {socket} from '../services/api.js'
 import {getSession, getToken} from '../services/auth'
+import {getConfigs, setConfigs} from '../services/settings'
 import router from '../router/index'
 import {useStore} from '../stores/dataStore'
 import data from "emoji-mart-vue-fast/data/all.json";
@@ -150,10 +151,13 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             socket.on("received-message", (message) => {
                 addMessage(message.response)
             });
-
-            $("#startRecording").on('click', () => {
-                console.log('teste')
+            const incomingCallEvents = async(call) =>{
+                await this.incomingCallEvents(call)
+            }
+            socket.on("incomingcall", (call) => {
+                incomingCallEvents(call)
             });
+
         },
         setup(){
             const data = useStore()
@@ -180,9 +184,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 loadingMoreMessages: false,
                 hasNoMore: false,
 
-                userConfig: [{
-                    sendSeen: false, // trocar posteriormente, apenas no momento do teste, vou deixar como false
-                }],
+                settings: getConfigs(),
                 i18n: language(),
 
             }
@@ -321,7 +323,8 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 var nMessage = this.data.message;
                 this.data.message = ''
                 if (!!nMessage.trim() && !!this.getSession()) {
-                    const by = "";
+                    var by = '';
+                    if(this.settings.attendantName) {by = '*'+this.settings.attendantName+':*\n'}
                     let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
                     let endpoint = "send-message";
 
@@ -365,7 +368,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 try {
                     if (idContact.includes("@g.us")) {
                         const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
-                        if(this.userConfig.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@g.us", "")}, configHeader());}
+                        if(this.settings.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@g.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
                         this.choosedContact.msgs = data?.response || [];
@@ -373,7 +376,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         this.scrollToBottom()
                     } else {
                         const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@c.us,@g.us]/g, "")}?isGroup=false`, configHeader());
-                        if(this.userConfig.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
+                        if(this.settings.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
                         contact.unreadCount = 0;
                         this.messages = data?.response || [];
                         this.choosedContact.msgs = data?.response || [];
@@ -438,6 +441,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     };
                 }
             },
+            
 
             /** FUNÇÕES PARA GRAVAÇÃO DE AUDIO E CONTAGEM DE TEMPO - INICIO */
             tooggleCount(){
@@ -535,6 +539,12 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 this.segundos = 0;
             },
             /** FUNÇÕES PARA GRAVAÇÃO DE AUDIO E CONTAGEM DE TEMPO - FIM */
+
+            async incomingCallEvents(call){   
+                if(this.settings.rejectCall){ await api.post(`${getSession()}/reject-call`,{callId: call.id}, configHeader());}
+                if(this.settings.rejectCall && this.settings.msgRejectCall){ await api.post(`${getSession()}/send-message`,{phone: call.peerJid.replace(/[@c.us,@g.us]/g, ""), message: this.settings.msgRejectCall}, configHeader());}
+                if(!this.settings.rejectCall){this.$swal('O telefone '+call.peerJid.replace(/[@c.us,@g.us]/g, "")+' está te ligando...')}
+            },
             setSelectedMessage(message){
                 this.selectedMessage = message;
             },

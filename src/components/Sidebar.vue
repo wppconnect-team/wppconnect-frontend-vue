@@ -28,7 +28,7 @@
                     </li>
 
                     <li>
-                        <router-link to="/settings" style="pointer-events:none;opacity:0.5;" >
+                        <router-link to="/settings" >
                             <span class="material-icons">settings</span>
                             <span>Settings</span>
                         </router-link>

@@ -45,6 +45,13 @@ export function getLanguage(lang){
             allGroupsText: 'Manage all your groups.',
             createGroup: 'Create Group',
             createGroupText: 'Create a WhatsApp group in an automated way.',
+            settings: 'Settings',
+            general: 'General',
+            generalText: 'General system settings',
+            buttons: 'Buttons',
+            buttonsText: 'Configure buttons to send to your contacts',
+            list: 'Lists',
+            listText: 'Configure list sections to send to your contacts',
         }
     }
 }

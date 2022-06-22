@@ -4,6 +4,7 @@ const Login = () => import('../pages/Login')
 const Chat = () => import('../pages/Chat')
 const Contacts = () => import('../pages/Contacts')
 const Groups = () => import('../pages/Groups')
+const Configs = () => import('../pages/Configs')
 
 const routes = [
   {
@@ -39,6 +40,14 @@ const routes = [
     path: '/groups',
     name: 'groups',
     component: Groups,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: Configs,
     meta: {
       requiresAuth: true
     }
