@@ -59,16 +59,7 @@
                     </div>
 
                     <div class="info-session">
-                        <img src="https://ui-avatars.com/api/?name=${getSession()}?background=random"
-                             :alt="selectedValue"/>
-                        <div>
-                            <p>
-                                {{selectedValue}}
-                            </p>
-                            <small>
-                                Active Session
-                            </small>
-                        </div>
+                        <img src="https://ui-avatars.com/api/?name=U?background=random" :alt="selectedValue"/>
                     </div>
                 </footer>
             </div>
