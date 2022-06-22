@@ -104,7 +104,9 @@ import {useStore} from '../stores/dataStore'
                         await this.signSession();
                     } else {
                         this.insertLocalStorage();
-                        router.push('/chat')
+                        setTimeout(() => {
+                            location.reload();
+                        },1000)
                     }
                 } catch (e) {
                     var that = this;
@@ -138,10 +140,7 @@ import {useStore} from '../stores/dataStore'
                 if (status.session === this.session) {
                     if (this.token) {
                         this.insertLocalStorage();
-
-                        setTimeout(() => {
-                            router.push('/chat')
-                        }, 500)
+                        location.reload();
                     }
                 }
             },

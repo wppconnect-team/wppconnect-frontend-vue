@@ -33,33 +33,18 @@
                             <span>Settings</span>
                         </router-link>
                     </li>
-
-                    <li>
-                        <router-link to="/logout" @click="logoutSession">
-                            <span class="material-icons">logout</span>
-                            <span>Disconnect device</span>
-                        </router-link>
-                    </li>
                 </section>
 
                 <footer>
-                    <div class="change-session">
-                        <div>
-                            <div className="online-circle"/>
-                            <p>
-                                Online
-                            </p>
-                        </div>
-
-                        <div>
-                            <a href="/change-session" @click="handleClickOpen">
-                                Change
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="info-session">
-                        <img src="https://ui-avatars.com/api/?name=U?background=random" :alt="selectedValue"/>
+                    <div class="btn-group dropup">
+                        <button class="btn btn-secondary dropdown-toggle btn-options" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <img type="button" :src="defaultImage" width="40"  />
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><router-link to="/settings" ><button class="dropdown-item" type="button">Configurações</button></router-link></li>
+                            <li><button class="dropdown-item" @click="logoutSession" type="button">Trocar sessão</button></li>
+                            <li><button class="dropdown-item" @click="logoutDispositivo" type="button">Desconectar dispositivo</button></li>
+                        </ul>
                     </div>
                 </footer>
             </div>
@@ -69,12 +54,13 @@
 import { config } from '../config';
 import configHeader from "../util/sessionHeader";
 import api, {socket} from '../services/api.js'
-import {getSession, getToken} from '../services/auth'
+import {getSession, logout} from '../services/auth'
 import router from '../router/index'
 import {useStore} from '../stores/dataStore'
 
 //Components
 
+const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5453c57857.jpg";
 
 
 //Assets
@@ -83,6 +69,7 @@ import {useStore} from '../stores/dataStore'
         components: {
         },
         async mounted(){
+
         },
         setup(){
             const data = useStore()
@@ -95,18 +82,24 @@ import {useStore} from '../stores/dataStore'
             }
         },
         methods: {
-            async logoutSession(e) {
-                e.preventDefault();
-
-                await api.post(`${getSession()}/logout-session`, null, configHeader());
-                window.location.href = "/login";
+            logoutDispositivo() {
+                api.post(`${getSession()}/logout-session`, null, configHeader());
+                logout();
+                router.push('/login')
             },
-            async closeSession() {
-                await api.post(`${getSession()}/close-session`, null, configHeader());
-                window.location.href = "/login";
-            }
+            tooggleDropdown(){
+                $('#tooggleDropdown').trigger('click');
+            },
+            logoutSession(){
+                logout();
+                router.push('/login')
+            },
         },
         computed:{
+            defaultImage(){
+                return defaultImage;
+            }
+            
         },
  
     }
@@ -210,7 +203,11 @@ import {useStore} from '../stores/dataStore'
     display: none;
 }
 
-
+footer{
+    position: fixed;
+    bottom: 15px;
+    cursor: pointer;
+}
 .change-session{
   display: block;
   align-items: center;
@@ -235,13 +232,33 @@ import {useStore} from '../stores/dataStore'
     color: #47a7f6;
     text-decoration: none;
 }
+.btn-options{
+    background-color: transparent;
+    border: transparent;
+    box-shadow: 0;
+}
+.btn-options:hover{
+    background-color: transparent;
+    border: transparent;
+    box-shadow: 0;
+}
+.btn-options:focus{
+    background-color: transparent;
+    border: transparent;
+    box-shadow: 0;
+}
+.btn-options::selection{
+    background-color: transparent;
+    border: transparent;
+    box-shadow: 0;
+}
 .info-session{
   display: block;
   align-items: center;
   padding: 1em 10px;
   font-size: 1rem;
-  cursor: default;
 }
+
 .info-session div{
     display: flex;
     flex-direction: column;
@@ -251,6 +268,7 @@ import {useStore} from '../stores/dataStore'
     height: 40px;
     border-radius: 50%;
     margin-right: 10px;
+  cursor: pointer;
 }
 .info-session a{
     font-size: 1rem;
@@ -269,5 +287,9 @@ import {useStore} from '../stores/dataStore'
 }
 .logout-button:hover{
     background: red;
+}
+.dropdown-menu li a{
+    
+  text-decoration: none;
 }
 </style>

@@ -53,10 +53,10 @@ npm run build
 - [x] Chat
 - [x] Multisession
 - [x] Receiving messages (real time)
-- [x] Send messages, documents, images, videos, etc
-- [x] Receive images, audio, sticker, text, etc
-- [x] Reject call with messages
-- [x] Send attandent name
+- [x] Send audio, messages, documents, images, videos, etc
+- [x] Receive messages, images, audio, sticker, documents, etc
+- [x] Reject call or/and with messages
+- [x] Send attandant name
 - [x] Send buttons List
 - [x] Send List sections
 

@@ -27,7 +27,7 @@ export const logout = () => {
 };
 
 export const getSession = () => {
-    if (defaultKey() !== null) {
+    if (defaultKey() != null) {
         const {session} = JSON.parse(defaultKey());
         return session;
     }

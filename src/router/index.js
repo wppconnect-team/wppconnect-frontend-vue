@@ -72,5 +72,16 @@ router.beforeEach(async (to, from, next) => {
     }else{
       next()
     }
+  }else{
+    if(to.path == '/login'){
+      if (localStorage.getItem(config.TOKEN_KEY) != null) {
+        next({
+          path: '/chat',
+        })
+      }else{
+        next();
+      }
+    }
+    next()
   }
 });

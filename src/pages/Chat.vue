@@ -263,18 +263,13 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     for (const elem of response) {
                         if (!elem.archive) {
                             var newarray = elem
+                            newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
                             if(elem.id.includes('@g.us')){
                                 newarray = elem;
-                                if(elem.msgs.length === 0){
-                                    newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
-                                }
                             }else{
                                 this.data.contacts.map((contact)=>{
                                     if(contact.id._serialized == elem.id){
                                         newarray = contact;
-                                        if(elem.msgs.length === 0){
-                                            newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
-                                        }
                                         newarray.msgs = elem.msgs;
                                         newarray.unreadCount = elem.unreadCount;
                                     }
@@ -286,6 +281,8 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                     this.data.chats = arr;
                     this.data.dados = arr;
                 } catch (e) {
+                    console.log(e)
+                    /*
                     const {data: {response}} = await api.get(`${getSession()}/all-chats-with-messages`, configHeader());
 
                     const arr = [];
@@ -294,7 +291,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                             var newarray = elem
                             if(elem.id.includes('@g.us')){
                                 newarray = elem;
-                                if(elem.msgs.length === 0){
+                                if(elem.msgs.length < 1){
                                     newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
                                 }
                             }else{
@@ -302,7 +299,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                                     if(contact.id._serialized == elem.id){
                                         newarray = contact;
                                         newarray.msgs = elem.msgs;
-                                        if(elem.msgs.length === 0){
+                                        if(elem.msgs.length < 1){
                                             newarray.msgs = [{id: 0, t: 0, body: 'No messages'}]
                                         }
                                         newarray.unreadCount = elem.unreadCount;
@@ -313,7 +310,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                         }
                     }
                     this.data.chats = arr;
-                    this.data.dados = arr;
+                    this.data.dados = arr;*/
                 }
             },
             async setChats(chats){
