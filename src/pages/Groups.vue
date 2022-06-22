@@ -81,7 +81,7 @@
                             <td>{{group.id}}</td>
                             </tr>
                         </tbody>
-                        </table>
+                    </table>
                 </div>
             </div>
         </div>

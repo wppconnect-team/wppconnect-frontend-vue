@@ -12,35 +12,22 @@
                     <input id="search-contacts" :placeholder="i18n.searchContacts" />
                 </div>
             </header>
-
-                <table>
-                    <thead>
-                    <tr>
-                        <th>
-                            #
-                        </th>
-                        <th>
-                            {{i18n.name}}
-                        </th>
-                        <th>
-                            {{i18n.phone}}
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(contact, index) in data.contacts" v-bind:key="index">
-                            <td>
-                            # {{index}}
-                            </td>
-                            <td>
-                            {{contact.name}}
-                            </td>
-                            <td>
-                            {{maskPhone(contact.id.user)}}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">{{i18n.name}}</th>
+                            <th scope="col">{{i18n.phone}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(contact, index) in data.contacts" v-bind:key="index">
+                            <th scope="row">{{index}}</th>
+                            <td>{{contact.name}}</td>
+                            <td>{{maskPhone(contact.id.user)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
             </div>
         </div>
     </div>
@@ -151,25 +138,12 @@ table {
   position:absolute;
   top:70px;
   left: 100px;
-      font-size: 13pt;
+  font-size: 13pt;
 }
 table thead tr{
-    width: 70%;
+    width: 35%;
   display: flex;
   align-content: center;
   justify-content: space-between;
-  background-color:rgb(202, 202, 202);
-}
-table thead tr th{
-    width: 30%;
-}
-table tbody tr{
-    width: 70%;
-  display: flex;
-  justify-content: space-between;
-  border: 0.5px solid black;
-}
-table tbody tr td{
-    width: 30%;
 }
 </style>
