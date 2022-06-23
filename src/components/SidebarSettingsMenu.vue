@@ -19,6 +19,23 @@
                         </div>
                     </li>
                 </router-link>
+                <router-link to="/profile">
+                    <li >
+                        <div class="wrapper-li">
+                            <div class="wrapper-ic">
+                                <span class="material-icons">done</span>
+                            </div>
+                            <div class="wrapper-text">
+                                <h2>
+                                    Perfil
+                                </h2>
+                                <p>
+                                    Troque aqui as configurações do seu perfil, foto, status, etc.
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                </router-link>
 
                 <router-link to="/settings/buttons">
                     <li>
