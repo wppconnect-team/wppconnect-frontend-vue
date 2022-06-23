@@ -4,7 +4,16 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "changelog:last": "conventional-changelog -p angular -r 2",
+    "changelog:preview": "conventional-changelog -p angular -u",
+    "changelog:update": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "commit": "git-cz",
+    "license:add": "license-check-and-add add",
+    "license:check": "license-check-and-add check",
+    "lint": "eslint --ext .js src",
+    "prepare": "husky install",
+    "release": "release-it"
   },
   "dependencies": {
     "axios": "^0.27.2",
@@ -19,10 +28,19 @@
     "vue-sweetalert2": "^5.0.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "@commitlint/cz-commitlint": "^17.0.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "conventional-changelog-cli": "^2.2.2",
+    "eslint": "^8.18.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "license-check-and-add": "^4.0.5"
   },
   "browserslist": [
     "> 1%",
