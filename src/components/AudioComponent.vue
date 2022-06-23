@@ -21,7 +21,8 @@
                     </div>
                 </div>
                 <div class="user" v-bind:class="{ 'isMe': isMe== true}">
-                    <img :src="profileImage" alt="ProfileImg"/>
+                    <img :src="profileImage" v-if="!isMe" alt="ProfileImg"/>
+                    <img :src="defaultImage" v-if="isMe" alt="defaultImage"/>
                     <span class="material-icons">mic</span>
                 </div>
             </div>
@@ -38,6 +39,7 @@ import axios from 'axios'
 import {useStore} from '../stores/dataStore'
 
 //Assets
+const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5453c57857.jpg";
 
     export default {
         props: ['url', 'isMe','profileImage','contact','message'],
@@ -136,9 +138,12 @@ import {useStore} from '../stores/dataStore'
                     "--player-percent-played",
                     `${percentPlayed}%`
                 );
-            }
+            },
         },
         computed:{
+            defaultImage(){
+                return defaultImage;
+            }
         },
  
     }
@@ -216,9 +221,6 @@ import {useStore} from '../stores/dataStore'
     right: 0;
     left: auto;
     transform: translateX(50%);
-}
-.user.isMe img{
-    display:none;
 }
 .audio-player .player{
       margin-right: 0.8rem;
