@@ -9,9 +9,16 @@
       />
 
       <div class="message-container" @dblclick="selectMessageId" v-bind:class="{ 'left': isMe== true, 'warning': isWarning==true}" >
-        <div style="position: absolute, right: -5, top: -5, z-index: 10; ">
+        <div style="position: absolute, right: -5, top: -5, z-index: 10; " data-bs-toggle="dropdown" aria-expanded="false">
             <span class="material-icons" style="cursor:pointer">keyboard_arrow_down</span>          
         </div>
+
+        <div class="btn-group dropstart">
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" @click="selectMessageId">Responder</a></li>
+        </ul>
+        </div>
+
 
           <span class="msg-title-top" v-if="!message.fromMe">
             <small> {{message.sender?.name || message.sender?.id?.user}}</small> <small class="pushname">~ {{message?.sender?.pushname}}</small>
