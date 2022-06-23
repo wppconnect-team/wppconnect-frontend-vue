@@ -34,7 +34,7 @@
                             </div>
                             <div v-if="messages.length > 0">
                                 <li v-bind:key="message.id" v-for="message in messages" :id="message.id">
-                                    <ChatComponent
+                                    <MessageComponent
                                     :isMe="message.fromMe ? true : false"
                                     :isWarning="!message?.body && message.type !== 'chat' && !['ptt', 'audio'].includes(message.type)"
                                     
@@ -51,7 +51,7 @@
                         </ul>
                         <div class="reply-container" v-if="selectedMessage.length != 0">
                             <div class="content">
-                                <ChatComponent
+                                <MessageComponent
                                 :isMe="selectedMessage.fromMe ? true : false"
                                 :isWarning="!selectedMessage?.body && selectedMessage.type !== 'chat' && !['ptt', 'audio'].includes(selectedMessage.type)"
                                 
@@ -157,7 +157,7 @@ import MicRecorder from "mic-recorder-to-mp3";
 import {language} from '../services/language'
 
 //Components
-import ChatComponent from '../components/ChatComponent.vue'
+import MessageComponent from '../components/MessageComponent.vue'
 import ConversasComponent from '../components/ConversasComponent.vue'
 import Sidebar from '../components/Sidebar.vue'
 
@@ -170,7 +170,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
 
     export default {        
         components: {
-            ChatComponent,
+            MessageComponent,
             ConversasComponent,
             Picker,
             Sidebar,

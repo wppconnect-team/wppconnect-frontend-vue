@@ -7,11 +7,6 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 
-import ConversasComponent from './components/ConversasComponent'
-import ChatComponent from './components/ChatComponent'
-import ImageModal from './components/ImageModal.vue'
-import AudioComponent from './components/AudioComponent.vue'
-
 require('./assets/css/app.css');
 
 const app = createApp(App)
