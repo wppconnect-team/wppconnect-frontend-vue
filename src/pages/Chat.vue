@@ -86,6 +86,12 @@
                                         <span class="material-icons">attach_file</span>
                                     </div>
                                     </label>
+
+                                    <label>
+                                    <div class="attach-info" data-bs-toggle="modal" data-bs-target="#sendOptModal">
+                                        <span class="material-icons">list</span>
+                                    </div>
+                                    </label>
                                 </div>
                                     <span class="material-icons" style="cursor:pointer;" id="startRecording" @click="startRecording" v-if="!recordState">mic</span>
                                     <div class="contador" v-else>
@@ -104,6 +110,33 @@
                 </div>
             </div>
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="sendOptModal" tabindex="-1" aria-labelledby="sendOptModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendOptModalLabel" >Envio de listas e botões</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4>Botões</h4>
+                <div class="" style="cursor:pointer;" v-for="(btn,index) in buttons" @click="sendButton(btn)" v-bind:key="index">
+                    <h6>{{btn.name}}</h6>
+                    <small class="form-text text-muted">{{btn.message}}</small>
+                    <hr/>
+                </div>
+                <h4>Listas</h4>
+                <div class="" style="cursor:pointer;" v-for="(lst,index) in lists" @click="sendList(lst)" v-bind:key="index">
+                    <h6>{{lst.name}}</h6>
+                    <small class="form-text text-muted">{{lst.title}}</small>
+                    <hr/>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+            </div>
+        </div>
+        </div>
     </div>
 </template>
 <script>
@@ -111,7 +144,9 @@ import { config } from '../config';
 import configHeader from "../util/sessionHeader";
 import api, {socket} from '../services/api.js'
 import {getSession, getToken} from '../services/auth'
-import {getConfigs, setConfigs} from '../services/settings'
+import {getConfigs} from '../services/settings'
+import {getButtons} from '../services/settings_buttons'
+import {getLists} from '../services/settings_lists'
 import router from '../router/index'
 import {useStore} from '../stores/dataStore'
 import data from "emoji-mart-vue-fast/data/all.json";
@@ -185,6 +220,8 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 hasNoMore: false,
 
                 settings: getConfigs(),
+                buttons: getButtons(),
+                lists: getLists(),
                 i18n: language(),
 
             }
@@ -346,6 +383,40 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 } else {
                     this.$swal('Digite uma mensagem!')
                 }
+            },
+            async sendButton(btn){
+                let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
+                var body = {
+                    "isGroup": false,
+                    "phone": idContact.replace('@c.us','@g.us',''),
+                    "message": btn.message,
+                    "options": {
+                        "useTemplateButtons": "true",
+                        "buttons": btn.buttons,
+                        "title": btn.title,
+                        "footer": btn.footer
+                    }
+                }
+                if (idContact.includes("@g.us")) {
+                    body.isGroup = true;
+                }
+                await api.post(`${getSession()}/send-buttons`, body, configHeader());
+                $('#sendOptModal').modal('hide')
+            },
+            async sendList(list){
+                let idContact = this.choosedContact.id._serialized ? this.choosedContact.id._serialized : this.choosedContact.id;
+                var body = {
+                    "isGroup": false,
+                    "phone": idContact.replace('@c.us','@g.us',''),
+                    "buttonText": list.buttonText,
+                    "description": list.description,
+                    "sections": list.sections,
+                }
+                if (idContact.includes("@g.us")) {
+                    body.isGroup = true;
+                }
+                await api.post(`${getSession()}/send-buttons-list`, body, configHeader());
+                $('#sendOptModal').modal('hide')
             },
             scrollToBottom() {
                 setTimeout(() => {

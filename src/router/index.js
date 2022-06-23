@@ -5,6 +5,8 @@ const Chat = () => import('../pages/Chat')
 const Contacts = () => import('../pages/Contacts')
 const Groups = () => import('../pages/Groups')
 const Configs = () => import('../pages/Configs')
+const Configs_Buttons = () => import('../pages/Configs_Buttons.vue')
+const Configs_Lists = () => import('../pages/Configs_Lists.vue')
 
 const routes = [
   {
@@ -48,6 +50,22 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: Configs,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/settings/buttons',
+    name: 'settings-buttons',
+    component: Configs_Buttons,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/settings/lists',
+    name: 'settings-lists',
+    component: Configs_Lists,
     meta: {
       requiresAuth: true
     }

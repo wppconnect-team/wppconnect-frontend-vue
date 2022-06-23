@@ -4,58 +4,7 @@
             <Sidebar />
             <ModalCreateGroup @handleClose="handleCloseCreate" @open="openModalCreate"/>
             <div class="container">
-                <div class="left-container">
-                    <ul>
-                        <li >
-                            <div class="wrapper-li">
-                                <div class="wrapper-ic">
-                                    <span class="material-icons">person</span>
-                                </div>
-                                <div class="wrapper-text">
-                                    <h2>
-                                        {{i18n.allGroups}}
-                                    </h2>
-                                    <p>
-                                        {{i18n.allGroupsText}}
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li style="pointer-events:none; opacity:0.5;">
-                            <div className="wrapper-li">
-                                <div className="wrapper-ic">
-                                    <span class="material-icons">group_add</span>
-                                </div>
-                                <div class="wrapper-text">
-                                    <h2>
-                                        {{i18n.createGroup}}
-                                    </h2>
-                                    <p>
-                                        {{i18n.createGroupText}}
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li style="pointer-events:none; opacity:0.5;">
-                            <div class="wrapper-li">
-                                <div class="wrapper-ic">
-                                    <span class="material-icons">add</span>
-                                </div>
-                                <div class="wrapper-text">
-                                    <h2>
-                                        {{i18n.inviteParticipants}}
-                                    </h2>
-                                    <p>
-                                        {{i18n.inviteParticipantsText}}
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
+                <SidebarGroupsMenu />
                 <div class="right-container">
                     <header>
                         <h2>
@@ -97,6 +46,7 @@ import {language} from '../services/language'
 
 //Components
 import Sidebar from '../components/Sidebar.vue'
+import SidebarGroupsMenu from '../components/SidebarGroupsMenu.vue'
 
 
 //Assets
@@ -106,6 +56,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
     export default {        
         components: {
             Sidebar,
+            SidebarGroupsMenu,
         },
         async mounted(){
             $("#search-groups").on("keyup", function() {
