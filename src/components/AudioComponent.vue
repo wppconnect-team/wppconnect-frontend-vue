@@ -59,15 +59,16 @@ import {useStore} from '../stores/dataStore'
         },
         methods: {
             setAudio(){
-                this.audio = new Audio(this.$refs.audioPlayer.dataset.url);
+                this.audio = new Audio('');
             },
             async checkIsDownloaded() {
-                if (this.$refs.audioPlayer.dataset.url === undefined) {
+                if (this.audio.src.includes('/chat')) {
                     await api.get(`${getSession()}/get-media-by-message/${this.message.id}`,configHeader())
                     .then((result)=>{
-                        this.$emit('setUrl', result.data.base64)
-                        this.audio = new Audio(this.$refs.audioPlayer.dataset.url);
-                        this.start()
+                        this.audio = new Audio('data:audio/ogg;base64,'+result.data.base64);
+                        setTimeout(()=> {
+                            this.start()
+                        },200)
                     })
                 } else {
                     this.start();
@@ -100,9 +101,6 @@ import {useStore} from '../stores/dataStore'
             },
             formatTimeToDisplay(seconds) {
                 var milliseconds = seconds * 1000;
-                /*if(!Number.isInteger(seconds) ){
-                    milliseconds = 1 * 1000;
-                }*/
                 return new Date(milliseconds).toISOString().substr(14, 5);
             },
 
