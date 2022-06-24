@@ -28,6 +28,10 @@
     "vue-sweetalert2": "^5.0.5"
   },
   "devDependencies": {
+    "@babel/cli": "^7.17.10",
+    "@babel/core": "^7.18.5",
+    "@babel/eslint-parser": "^7.18.2",
+    "@babel/eslint-plugin": "^7.17.7",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
     "@commitlint/cz-commitlint": "^17.0.0",
@@ -40,7 +44,8 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^8.0.1",
-    "license-check-and-add": "^4.0.5"
+    "license-check-and-add": "^4.0.5",
+    "prettier": "^2.7.1"
   },
   "browserslist": [
     "> 1%",
