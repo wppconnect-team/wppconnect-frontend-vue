@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import config from '../config.js'
+import config from "../config.js";
 export const TOKEN_KEY = config.TOKEN_KEY;
 
 export const defaultKey = () => localStorage.getItem(TOKEN_KEY);
 
-export const login = token => {
-    localStorage.setItem(TOKEN_KEY, token);
+export const login = (token) => {
+  localStorage.setItem(TOKEN_KEY, token);
 };
 
 export const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(TOKEN_KEY);
 };
 
 export const getSession = () => {
-    if (defaultKey() != null) {
-        const {session} = JSON.parse(defaultKey());
-        return session;
-    }
+  if (defaultKey() != null) {
+    const { session } = JSON.parse(defaultKey());
+    return session;
+  }
 };
 
 export const getToken = () => {
-    if (defaultKey() !== null) {
-        const {token} = JSON.parse(defaultKey());
-        return token;
-    }
+  if (defaultKey() !== null) {
+    const { token } = JSON.parse(defaultKey());
+    return token;
+  }
 };
 
 export const getDefaultImage = () => {
-    return "https://www.promoview.com.br/uploads/images/unnamed%2819%29.png";
+  return "https://www.promoview.com.br/uploads/images/unnamed%2819%29.png";
 };
