@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import axios from "axios";
-import {io} from "socket.io-client";
-import config from '../config.js'
+import { io } from "socket.io-client";
+import config from "../config.js";
 
 const ip = config.IP_SERVER;
 
 export const socket = io(config.IP_SOCKET_IO);
-export const api = axios.create({baseURL: ip});
+export const api = axios.create({ baseURL: ip });
 export default api;

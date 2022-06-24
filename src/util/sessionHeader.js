@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {defaultKey, getToken, TOKEN_KEY} from "../services/auth";
+import { defaultKey, getToken } from "../services/auth";
 
 const key = JSON.parse(defaultKey());
 
 const configHeader = () => {
-    if (key !== null) {
-        return {headers: {Authorization: `Bearer ${getToken()}`}};
-    }
+  if (key !== null) {
+    return { headers: { Authorization: `Bearer ${getToken()}` } };
+  }
 };
 
 export default configHeader;

@@ -1,25 +1,19 @@
-import { defineStore } from 'pinia'
-import {api} from '../services/api'
-import {socket} from '../services/api'
+import { defineStore } from "pinia";
 
+export const useStore = defineStore("data", {
+  state: () => ({
+    readyConnection: true,
+    darkMode: false,
 
-export const useStore = defineStore('data', {
-    state: () => ({
-      readyConnection: true,
-      darkMode: false,
+    chats: [],
+    contacts: [],
+    config: [],
 
-      chats: [],
-      contacts: [],
-      config: [],
-      
-      message: '',
-    }),
-    
-    actions: {
-        async getAllContacts(){
-        },
-        
-    },
-    getters: {
-    }
-  })
+    message: "",
+  }),
+
+  actions: {
+    async getAllContacts() {},
+  },
+  getters: {},
+});

@@ -13,31 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import config from '../config.js'
+import config from "../config.js";
 export const TOKEN_KEY = config.TOKEN_KEY;
 
-export const defaultKey = () => localStorage.getItem('settings_'+TOKEN_KEY);
+export const defaultKey = () => localStorage.getItem("settings_" + TOKEN_KEY);
 
-export const setConfigs = configs => {
-    console.log(configs)
-    localStorage.setItem('settings_'+TOKEN_KEY, JSON.stringify(configs));
+export const setConfigs = (configs) => {
+  console.log(configs);
+  localStorage.setItem("settings_" + TOKEN_KEY, JSON.stringify(configs));
 };
 
 export const deleteConfigs = () => {
-    localStorage.removeItem('settings_'+TOKEN_KEY);
+  localStorage.removeItem("settings_" + TOKEN_KEY);
 };
 
 export const getConfigs = () => {
-    if (defaultKey() !== null) {
-        return JSON.parse(defaultKey());
-    }else{
-        return {
-            sendSeen: true,
-            rejectCall: false,
-            notifySound: true,
-            msgRejectCall: '',
-            msgWelcome: '',
-            attendantName: '',
-        }
-    }
+  if (defaultKey() !== null) {
+    return JSON.parse(defaultKey());
+  } else {
+    return {
+      sendSeen: true,
+      rejectCall: false,
+      notifySound: true,
+      msgRejectCall: "",
+      msgWelcome: "",
+      attendantName: "",
+    };
+  }
 };

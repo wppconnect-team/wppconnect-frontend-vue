@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import config from '../config.js'
+import config from "../config.js";
 export const TOKEN_KEY = config.TOKEN_KEY;
 
-export const defaultKey = () => localStorage.getItem('lists_'+TOKEN_KEY);
+export const defaultKey = () => localStorage.getItem("lists_" + TOKEN_KEY);
 
-export const setLists = lists => {
-    localStorage.setItem('lists_'+TOKEN_KEY, JSON.stringify(lists));
+export const setLists = (lists) => {
+  localStorage.setItem("lists_" + TOKEN_KEY, JSON.stringify(lists));
 };
 
 export const deleteLists = () => {
-    localStorage.removeItem('lists_'+TOKEN_KEY);
+  localStorage.removeItem("lists_" + TOKEN_KEY);
 };
 
 export const getLists = () => {
-    if (defaultKey() !== null) {
-        return JSON.parse(defaultKey());
-    }else{
-        return {}
-    }
+  if (defaultKey() !== null) {
+    return JSON.parse(defaultKey());
+  } else {
+    return {};
+  }
 };
