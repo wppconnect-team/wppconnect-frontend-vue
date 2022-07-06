@@ -48,6 +48,10 @@ npm run serve
 ```
 npm run build
 ```
+### To run, go to 'dist' folder 
+```jsx
+serve
+```
 ## Features
 
 - [x] Chat
