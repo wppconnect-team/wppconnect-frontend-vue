@@ -184,7 +184,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
             }
             onLoad()
             socket.on("received-message", (message) => {
-                addMessage(message.response)
+                addMessage(message?.response || message)
             });
             const incomingCallEvents = async(call) =>{
                 await this.incomingCallEvents(call)
@@ -435,23 +435,14 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 let idContact = contact.id._serialized ? contact.id._serialized : contact.id;
 
                 try {
-                    if (idContact.includes("@g.us")) {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@g.us,@g.us]/g, "")}?isGroup=true`, configHeader());
-                        if(this.settings.sendSeen){ await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@g.us", "")}, configHeader());}
+                        const {data} = await api.get(`${getSession()}/get-messages/${idContact}`, configHeader());
+                        //if(this.settings.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
                         contact.unreadCount = 0;
-                        this.messages = data?.response || [];
-                        this.choosedContact.msgs = data?.response || [];
+                        console.log(data);
+                        this.messages = data?.response || data || [];
+                        this.choosedContact.msgs = data?.response || data || [];
                         this.$swal().close()
                         this.scrollToBottom()
-                    } else {
-                        const {data} = await api.get(`${getSession()}/chat-by-id/${idContact.replace(/[@c.us,@g.us]/g, "")}?isGroup=false`, configHeader());
-                        if(this.settings.sendSeen) {await api.post(`${getSession()}/send-seen`,{phone: idContact.replace("@c.us", "")}, configHeader());}
-                        contact.unreadCount = 0;
-                        this.messages = data?.response || [];
-                        this.choosedContact.msgs = data?.response || [];
-                        this.$swal().close()
-                        this.scrollToBottom()
-                    }
                 } catch (e) {
                     if(e){
                         console.log(e)
@@ -690,7 +681,7 @@ const defaultImage = "https://i.pinimg.com/736x/51/24/9f/51249f0c2caed9e7c06e4a5
                 return ImageLoader;
             },
             getMyChats(){
-                const chatsSort = this.data.chats.sort(function(x, y){return y.msgs[y.msgs.length-1].t - x.msgs[x.msgs.length-1].t;})
+                const chatsSort = this.data.chats.sort(function(x, y){return y.msgs[y.msgs.length-1]?.timestamp - x.msgs[x.msgs.length-1]?.timestamp;})
                 return chatsSort.filter(chat => chat.msgs.length > 0)
             },
         },
